@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'package:flutter/services.dart' show MethodCall, MethodChannel, PlatformException, rootBundle;
-import 'package:flutter_document_reader_api/flutter_document_reader_api.dart';
+import 'package:flutter_document_reader_api_beta/flutter_document_reader_api_beta.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() => runApp(MyApp());
