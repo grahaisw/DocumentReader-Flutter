@@ -86,6 +86,12 @@ class RegulaConfig {
             editor.setOrientation(opts.getInt("orientation"));
         if (opts.has("startDocReaderForResult"))
             editor.setStartDocReaderForResult(opts.getBoolean("startDocReaderForResult"));
+        if (opts.has("captureMode"))
+            editor.setCaptureMode(opts.getInt("captureMode"));
+        if (opts.has("displayMetadata"))
+            editor.setDisplayMetadata(opts.getBoolean("displayMetadata"));
+//        if (opts.has("cameraSize"))
+//            editor.setCameraSize();
         editor.apply();
     }
 
@@ -128,8 +134,22 @@ class RegulaConfig {
             processParams.fieldTypesFilter = intArrayFromJson(opts.getJSONArray("fieldTypesFilter"));
         if (opts.has("barcodeTypes"))
             processParams.doBarcodes = barcodeTypeArrayFromJson(opts.getJSONArray("barcodeTypes"));
-        if(opts.has("faceMetaData"))
+        if (opts.has("faceMetaData"))
             processParams.faceMetaData = faceMetaDataArrayFromJson(opts.getJSONArray("faceMetaData"));
+        if (opts.has("timeout"))
+            processParams.timeout = opts.getDouble("timeout");
+        if (opts.has("timeoutFromFirstDetect"))
+            processParams.timeoutFromFirstDetect = opts.getDouble("timeoutFromFirstDetect");
+        if (opts.has("timeoutFromFirstDocType"))
+            processParams.timeoutFromFirstDocType = opts.getDouble("timeoutFromFirstDocType");
+        if (opts.has("manualCrop"))
+            processParams.manualCrop = opts.getBoolean("manualCrop");
+        if (opts.has("perspectiveAngle"))
+            processParams.perspectiveAngle = opts.getInt("perspectiveAngle");
+        if (opts.has("integralImage"))
+            processParams.integralImage = opts.getBoolean("integralImage");
+        if (opts.has("minDPI"))
+            processParams.minDPI = opts.getInt("minDPI");
     }
 
     private static void setCustomization(ParamsCustomization customization, JSONObject opts, Context context) throws JSONException {
@@ -267,6 +287,9 @@ class RegulaConfig {
         object.put("orientation", functionality.getOrientation());
         object.put("BTDeviceApiPresent", functionality.isBTDeviceApiPresent());
         object.put("startDocReaderForResult", functionality.getStartDocReaderForResult());
+        object.put("captureMode", functionality.getCaptureMode());
+        object.put("displayMetadata", functionality.isDisplayMetaData());
+//        object.put("cameraSize", functionality.getCameraSize());
 
         return object;
     }
@@ -349,6 +372,13 @@ class RegulaConfig {
         object.put("debugSaveRFIDSession", processParams.debugSaveRFIDSession);
         object.put("barcodeParserType", processParams.barcodeParserType);
         object.put("doublePageSpread", processParams.doublePageSpread);
+        object.put("timeout", processParams.timeout);
+        object.put("timeoutFromFirstDetect", processParams.timeoutFromFirstDetect);
+        object.put("timeoutFromFirstDocType", processParams.timeoutFromFirstDocType);
+        object.put("manualCrop", processParams.manualCrop);
+        object.put("perspectiveAngle", processParams.perspectiveAngle);
+        object.put("integralImage", processParams.integralImage);
+        object.put("minDPI", processParams.minDPI);
         object.put("logs", processParams.isLogEnable());
         if (processParams.documentIDList != null)
             object.put("documentIDList", generateIntArray(processParams.documentIDList));

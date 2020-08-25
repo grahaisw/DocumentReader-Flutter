@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("RedundantSuppression")
 class JSONConstructor {
 
     // To JSON
@@ -114,8 +115,11 @@ class JSONConstructor {
             jsonObject.put("chipPage", results.chipPage);
             jsonObject.put("highResolution", results.highResolution);
             jsonObject.put("morePagesAvailable", results.morePagesAvailable);
-            jsonObject.put("processingFinished", results.processingFinished);
+            jsonObject.put("processingFinishedStatus", results.processingFinishedStatus);
             jsonObject.put("rfidResult", results.rfidResult);
+            jsonObject.put("elapsedTimeRFID", results.elapsedTimeRFID);
+            jsonObject.put("elapsedTime", results.elapsedTime);
+            jsonObject.put("overallResult", results.getOverallResult());
             jsonObject.put("documentType", generateList(results.documentType, JSONConstructor::generateDocumentReaderDocumentType, context));
             if (results.barcodePosition != null)
                 jsonObject.put("barcodePosition", generateElementPosition(results.barcodePosition));
@@ -552,6 +556,7 @@ class JSONConstructor {
         result.put("validity", documentReaderValue.validity);
         result.put("value", documentReaderValue.value);
         result.put("originalValue", documentReaderValue.originalValue);
+        result.put("probability", documentReaderValue.probability);
         result.put("comparison", generateMapIntegerInteger(documentReaderValue.comparison));
         if (documentReaderValue.boundRect != null)
             result.put("boundRect", generateRect(documentReaderValue.boundRect));

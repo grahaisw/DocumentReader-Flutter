@@ -29,7 +29,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 
 import static com.regula.documentreader.api.DocumentReader.Instance;
 
-@SuppressWarnings({"unchecked", "unused", "NullableProblems", "ConstantConditions"})
+@SuppressWarnings({"unchecked", "unused", "NullableProblems", "ConstantConditions", "RedundantSuppression"})
 public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
     private Context context;
     private MethodChannel channel;
@@ -540,7 +540,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     private void recognizeImageWithCameraMode(Callback callback, String base64, boolean mode) {
         callback.error("recognizeImageWithCameraMode() is an ios-only method");
     }
-    
+
     private void initializeReaderWithDatabasePath(Callback callback, Object license, String path) {
         callback.error("initializeReaderWithDatabasePath() is an ios-only method");
     }
@@ -572,11 +572,11 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             }
 
             @Override
-            public void onPrepareCompleted(boolean status, String error) {
+            public void onPrepareCompleted(boolean status, Throwable error) {
                 if (status)
                     callback.success("database prepared");
                 else
-                    callback.error("database preparation failed: " + error);
+                    callback.error("database preparation failed: " + error.toString());
             }
         };
     }
