@@ -110,6 +110,7 @@ class DocumentReaderValue {
   int pageIndex;
   FieldRect boundRect;
   int validity;
+  int probability;
   Map<int, int> comparison = {};
 
   static DocumentReaderValue fromJson(jsonObject) {
@@ -122,8 +123,9 @@ class DocumentReaderValue {
     result.pageIndex = jsonObject["pageIndex"];
     result.boundRect = FieldRect.fromJson(jsonObject["boundRect"]);
     result.validity = jsonObject["validity"];
+    result.probability = jsonObject["probability"];
 
-    if (jsonObject["comparison"] != null) jsonObject["comparison"].forEach((k,v) => result.comparison[int.parse(k)] = v);
+    if (jsonObject["comparison"] != null) jsonObject["comparison"].forEach((k, v) => result.comparison[int.parse(k)] = v);
 
     return result;
   }
@@ -857,7 +859,9 @@ class PDF417Info {
 class DocumentReaderResults {
   int chipPage;
   int overallResult;
-  int processingFinished;
+  double elapsedTime;
+  double elapsedTimeRFID;
+  int processingFinishedStatus;
   int morePagesAvailable;
   int rfidResult;
   bool highResolution;
@@ -881,6 +885,10 @@ class DocumentReaderResults {
     var value = this.findBySource(field, source);
     if (value == null) return null;
     return original ? value.originalValue : value.value;
+  }
+
+  String getTextFieldValueByTypeAndSource(int fieldType, int source, {bool original = false}) {
+    return this.getTextFieldValueByType(fieldType, lcid: 0, source: source, original: original);
   }
 
   int getTextFieldStatusByType(int fieldType, {int lcid = 0}) {
@@ -960,7 +968,9 @@ class DocumentReaderResults {
     try {
       results.chipPage = jsonObject["chipPage"];
       results.overallResult = jsonObject["overallResult"];
-      results.processingFinished = jsonObject["processingFinished"];
+      results.elapsedTime = jsonObject["elapsedTime"] == null ? null : jsonObject["elapsedTime"].toDouble();
+      results.elapsedTimeRFID = jsonObject["elapsedTimeRFID"] == null ? null : jsonObject["elapsedTimeRFID"].toDouble();
+      results.processingFinishedStatus = jsonObject["processingFinishedStatus"];
       results.morePagesAvailable = jsonObject["morePagesAvailable"];
       results.rfidResult = jsonObject["rfidResult"];
       results.highResolution = jsonObject["highResolution"];
@@ -1039,11 +1049,18 @@ class BarcodeType {
   static const int AZTEC = 15;
   static const int DATAMATRIX = 16;
   static const int ALL_1D = 17;
+  static const int CODE11 = 18;
 }
 
 class CameraTypes {
   static const String FRONT = "front";
   static const String BACK = "back";
+}
+
+class CaptureMode {
+  static const int AUTO = 0;
+  static const int CAPTURE_VIDEO = 1;
+  static const int CAPTURE_FRAME = 2;
 }
 
 class diDocType {
@@ -1527,7 +1544,8 @@ class eRFID_CertificateType {
   static const int CT_CSCA_LINK = 2;
   static const int CT_DS = 3;
   static const int CT_MLS = 4;
-  static const int CT_DLS = 5;
+  static const int CT_DEV_LS = 5;
+  static const int CT_DEF_LS = 6;
 }
 
 class eRFID_DataFile_Type {
@@ -1593,6 +1611,7 @@ class eRFID_DataFile_Type {
   static const int DFT_DL_DG14 = 164;
   static const int DFT_DL_SOD = 165;
   static const int DFT_DL_CE = 166;
+  static const int DFT_DL_CVCA = 167;
   static const int DFT_PACE_CARDACCESS = 200;
   static const int DFT_PACE_CARDSECURITY = 201;
   static const int DFT_PACE_CHIPSECURITY = 202;
@@ -1609,6 +1628,7 @@ class eRFID_DataFile_Type {
   static const int DFT_APP_DIRECTORY = 700;
   static const int DFT_SESSION = 701;
   static const int DFT_LOGDATA = 702;
+  static const int DFT_CHIP_PROPERTIES = 703;
   static const int DFT_USERDEFINED = 1000;
 
   static String getTranslation(int value) {
@@ -1746,7 +1766,35 @@ class eRFID_DataFile_Type {
       case DFT_CERTIFICATE:
         return "Certificate";
       case DFT_APP_DIRECTORY:
-        return "App direсtory";
+        return "App directory";
+      case DFT_ATR:
+        return "DFT_ATR";
+      case DFT_AUTHENTICITYV2:
+        return "DFT_CHIP_PROPERTIES";
+      case DFT_CHIP_PROPERTIES:
+        return "DFT_CHIP_PROPERTIES";
+      case DFT_DEFECTLIST:
+        return "DFT_DEFECTLIST";
+      case DFT_DEVIATIONLIST:
+        return "DFT_DEVIATIONLIST";
+      case DFT_DL_CE:
+        return "DFT_DL_CE";
+      case DFT_DL_CVCA:
+        return "DFT_DL_CVCA";
+      case DFT_ESIGN_PK:
+        return "DFT_ESIGN_PK";
+      case DFT_ESIGN_SIGNEDDATA:
+        return "DFT_ESIGN_SIGNEDDATA";
+      case DFT_LOGDATA:
+        return "DFT_LOGDATA";
+      case DFT_MASTERLIST:
+        return "DFT_MASTERLIST";
+      case DFT_SESSION:
+        return "DFT_SESSION";
+      case DFT_UNSPECIFIED:
+        return "DFT_UNSPECIFIED";
+      case DFT_USERDEFINED:
+        return "DFT_USERDEFINED";
       default:
         return value.toString();
     }
@@ -2092,7 +2140,7 @@ class eRFID_NotificationAndErrorCodes {
       case -2130706072:
         return "Error - CV Certificate: Extensions incorrect data";
       case -2130706071:
-        return "Error - CV Certificate: Private key incorrect  data";
+        return "Error - CV Certificate: Private key incorrect data";
       case -2130706070:
         return "Error - CV Certificate: Private key missing";
       case -1879048191:
@@ -2376,7 +2424,7 @@ class eRFID_NotificationAndErrorCodes {
       case -1878458368:
         return "Notification - Biometrics: BDB format ID incorrect";
       case -1878392832:
-        return "Notification - Biometrics: BDB version incorrect ";
+        return "Notification - Biometrics: BDB version incorrect";
       case -1878327296:
         return "Notification - Biometrics: BDB data length incorrect";
       case -1877999616:
@@ -2464,7 +2512,7 @@ class eRFID_NotificationAndErrorCodes {
       case -1862270705:
         return "Notification - SI: RI domain params multiple entries";
       case -1862270704:
-        return "Notification - SI: Storage PACE Info Non Consistan";
+        return "Notification - SI: Storage PACE Info Non Consistant";
       case -1862270463:
         return "Notification - CV Certificate: Profile incorrect version";
       case -1862270462:
@@ -2570,9 +2618,9 @@ class eRFID_NotificationAndErrorCodes {
       case -2147456382:
         return "LAYER6: File selection failure / file not found";
       case -2147458430:
-        return "LAYER6: Reading beyond EOF / Unexpected EOF ";
+        return "LAYER6: Reading beyond EOF / Unexpected EOF";
       case -2147456256:
-        return "LAYER6: Reading beyond EOF / Unexpected EOF ";
+        return "LAYER6: Reading beyond EOF / Unexpected EOF";
       case -2147456384:
         return "LAYER6: Incorrect Params";
       case -2147456376:
@@ -2785,48 +2833,8 @@ class eRPRM_ResultType {
   static const int RFID_RESULT_TYPE_RFID_IMAGE_DATA = 103;
   static const int RFID_RESULT_TYPE_RFID_BINARY_DATA = 104;
   static const int RFID_RESULT_TYPE_RFID_ORIGINAL_GRAPHICS = 105;
-}
-
-class eRPRM_ResultType_Internal {
-  static const int RPRM_RESULT_TYPE_INTERNAL_PHOTO_POSITION = 99;
-  static const int RPRM_RESULT_TYPE_INTERNAL_MAIN_DOCUMENT_INFO = 98;
-  static const int RPRM_RESULT_TYPE_INTERNAL_FACE_DETECTION = 97;
-  static const int RPRM_RESULT_TYPE_INTERNAL_L1_STYLE_RESULTS = 96;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOC_FORMAT = 95;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOC_FORMAT_ROTATED = 94;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOC_PRE_ORIENTATION_FACE = 93;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BSI_XML = 92;
-  static const int RPRM_RESULT_TYPE_INTERNAL_COLOR_CALIBRATION_INFO = 91;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DIST_CALIBRATION_INFO = 90;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOCS_LIST = 89;
-  static const int RPRM_RESULT_TYPE_INTERNAL_VISA_BOUNDS = 88;
-  static const int RPRM_RESULT_TYPE_INTERNAL_MRZ_DETECTOR = 87;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOCUMENT_POSITION = 86;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BOUNDS_RESULT = 85;
-  static const int RPRM_RESULT_TYPE_INTERNAL_ORIENTATION = 84;
-  static const int RPRM_RESULT_TYPE_INTERNAL_PRE_ORIENTATION = 83;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DEVICE_TYPE = 82;
-  static const int RPRM_RESULT_TYPE_INTERNAL_TEXT_DOC_INFO = 81;
-  static const int RPRM_RESULT_TYPE_INTERNAL_GRAPHICS_DOC_INFO = 80;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BARCODE_DOC_INFO = 79;
-  static const int RPRM_RESULT_TYPE_INTERNAL_SOURCE_IMAGES_INFO = 78;
-  static const int RPRM_RESULT_TYPE_INTERNAL_REQUIRED_OCR_FIELDS = 77;
-  static const int RPRM_RESULT_TYPE_INTERNAL_LEX_ANALYSIS_DEPTH = 76;
-  static const int RPRM_RESULT_TYPE_INTERNAL_ORIGINAL_RESOLUTION_PPM = 75;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BOUNDS_LOCATION_PARAMS = 74;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BSI_XML_V2 = 73;
-  static const int RPRM_RESULT_TYPE_INTERNAL_CANDIDATE_INFO = 72;
-  static const int RPRM_RESULT_TYPE_INTERNAL_SAMPLE_PATH = 71;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BIND_RESULT = 70;
-  static const int RPRM_RESULT_TYPE_INTERNAL_SAVE_DEBUG_INFO = 69;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOCUMENT_JSON_DESC = 68;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BIND_LAYERS_LIST_DESC = 67;
-  static const int RPRM_RESULT_TYPE_INTERNAL_MRZ_IMAGE = 66;
-  static const int RPRM_RESULT_TYPE_INTERNAL_RAW_CALIBRATE_IMAGES = 65;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BYTE_ARRAY = 64;
-  static const int RPRM_RESULT_TYPE_INTERNAL_DOCUMENT_JSON = 63;
-  static const int RPRM_RESULT_TYPE_INTERNAL_BARCODE_POSITION = 62;
-  static const int RPRM_RESULT_TYPE_INTERNAL_MRZ_POSITION = 61;
+  static const int RPRM_RESULT_TYPE_BARCODE_POSITION = 62;
+  static const int RPRM_RESULT_TYPE_MRZ_POSITION = 61;
 }
 
 class eRPRM_SecurityFeatureType {
@@ -3407,6 +3415,18 @@ class eVisualFieldType {
   static const int FT_DLCLASSCODE_W_FROM = 581;
   static const int FT_DLCLASSCODE_W_NOTES = 582;
   static const int FT_DLCLASSCODE_W_TO = 583;
+  static const int FT_URL = 584;
+  static const int FT_CALIBER = 585;
+  static const int FT_MODEL = 586;
+  static const int FT_MAKE = 587;
+  static const int FT_NUMBER_OF_CYLINDERS = 588;
+  static const int FT_SURNAME_OF_HUSBAND_AFTER_REGISTRATION = 589;
+  static const int FT_SURNAME_OF_WIFE_AFTER_REGISTRATION = 590;
+  static const int FT_DATE_OF_BIRTH_OF_WIFE = 591;
+  static const int FT_DATE_OF_BIRTH_OF_HUSBAND = 592;
+  static const int FT_CITIZENSHIP_OF_FIRST_PERSON = 593;
+  static const int FT_CITIZENSHIP_OF_SECOND_PERSON = 594;
+  static const int FT_CVV = 595;
 
   static String getTranslation(int value) {
     switch (value) {
@@ -3415,7 +3435,7 @@ class eVisualFieldType {
       case FT_ISSUING_STATE_CODE:
         return "Issuing state code";
       case FT_DOCUMENT_NUMBER:
-        return "Document #";
+        return "Document number";
       case FT_DATE_OF_EXPIRY:
         return "Date of expiry";
       case FT_DATE_OF_ISSUE:
@@ -3425,7 +3445,7 @@ class eVisualFieldType {
       case FT_PLACE_OF_BIRTH:
         return "Place of birth";
       case FT_PERSONAL_NUMBER:
-        return "Personal #";
+        return "Personal number";
       case FT_SURNAME:
         return "Surname";
       case FT_GIVEN_NAMES:
@@ -3465,7 +3485,7 @@ class eVisualFieldType {
       case FT_NATIONALITY_CODE:
         return "Nationality code";
       case FT_PASSPORT_NUMBER:
-        return "Passport #";
+        return "Passport number";
       case FT_INVITATION_NUMBER:
         return "Invitation number";
       case FT_VISA_ID:
@@ -3497,11 +3517,11 @@ class eVisualFieldType {
       case FT_DATE_OF_EXPIRY_CHECKSUM:
         return "Checksum for date of expiry";
       case FT_PERSONAL_NUMBER_CHECKSUM:
-        return "Checksum for personal #";
+        return "Checksum for personal number";
       case FT_FINAL_CHECKSUM:
         return "Final checksum";
       case FT_PASSPORT_NUMBER_CHECKSUM:
-        return "Checksum for Passport #";
+        return "Checksum for passport number";
       case FT_INVITATION_NUMBER_CHECKSUM:
         return "Checksum for invitation number";
       case FT_VISA_ID_CHECKSUM:
@@ -3577,11 +3597,11 @@ class eVisualFieldType {
       case FT_DATE_OF_EXPIRY_CHECK_DIGIT:
         return "Check digit for date of expiry";
       case FT_PERSONAL_NUMBER_CHECK_DIGIT:
-        return "Check digit for personal #";
+        return "Check digit for personal number";
       case FT_FINAL_CHECK_DIGIT:
         return "Final check digit";
       case FT_PASSPORT_NUMBER_CHECK_DIGIT:
-        return "Check digit for Passport #";
+        return "Check digit for passport number";
       case FT_INVITATION_NUMBER_CHECK_DIGIT:
         return "Check digit for invitaiton number";
       case FT_VISA_ID_CHECK_DIGIT:
@@ -3697,7 +3717,7 @@ class eVisualFieldType {
       case FT_IDENTITY_CARD_NUMBER:
         return "Identity card number";
       case FT_CONTROL_NO:
-        return "Control #";
+        return "Control number";
       case FT_PARRENTS_GIVEN_NAMES:
         return "Parents\' given names";
       case FT_SECOND_SURNAME:
@@ -3903,9 +3923,9 @@ class eVisualFieldType {
       case FT_LINE_3_OPTIONAL_DATA:
         return "Optional data from line 3";
       case FT_EQV_CODE:
-        return "EQV Code";
+        return "EQV code";
       case FT_ALT_CODE:
-        return "ALT Code";
+        return "ALT code";
       case FT_BINARY_CODE:
         return "Binary code";
       case FT_PSEUDO_CODE:
@@ -3915,7 +3935,7 @@ class eVisualFieldType {
       case FT_STAMP_NUMBER:
         return "Stamp number";
       case FT_GNIB_NUMBER:
-        return "GNIB Number";
+        return "GNIB number";
       case FT_DEPT_NUMBER:
         return "Department number";
       case FT_TELEX_CODE:
@@ -3935,7 +3955,7 @@ class eVisualFieldType {
       case FT_MC_NOVICE_DATE:
         return "Expiry date of Motorcycle Novice status";
       case FT_DUF_NUMBER:
-        return "DUF Number";
+        return "DUF number";
       case FT_AGY:
         return "AGY";
       case FT_PNR_CODE:
@@ -3953,7 +3973,7 @@ class eVisualFieldType {
       case FT_DATE_OF_ISSUE_BOARDING_PASS:
         return "Date of boarding pass issue";
       case FT_CCW_UNTIL:
-        return "CCW Until";
+        return "CCW until";
       case FT_REFERENCE_NUMBER_CHECKSUM:
         return "Unique number checksum";
       case FT_REFERENCE_NUMBER_CHECK_DIGIT:
@@ -3977,7 +3997,7 @@ class eVisualFieldType {
       case FT_TICKET_NUMBER:
         return "Ticket number";
       case FT_FREQUENT_FLYER_AIRLINE_DESIGNATOR:
-        return "Frequent Flyer airline designator";
+        return "Frequent flyer airline designator";
       case FT_FREQUENT_FLYER_NUMBER:
         return "Frequent flyer number";
       case FT_FREE_BAGGAGE_ALLOWANCE:
@@ -4113,7 +4133,7 @@ class eVisualFieldType {
       case FT_EC_ENVIRONMENTAL_TYPE:
         return "Vehicle environmental type";
       case FT_POWER_WEIGHT_RATIO:
-        return "Power–to–weight ratio";
+        return "Power-to-weight ratio";
       case FT_MAX_MASS_OF_TRAILER_BRAKED:
         return "Max mass of trailer (braked)";
       case FT_MAX_MASS_OF_TRAILER_UNBRAKED:
@@ -4167,9 +4187,9 @@ class eVisualFieldType {
       case FT_NUMBER_OF_CARD_ISSUANCE:
         return "Number of card issuances";
       case FT_NUMBER_OF_CARD_ISSUANCE_CHECKSUM:
-        return "Сhecksum for number of card issuances";
+        return "Checksum for number of card issuances";
       case FT_NUMBER_OF_CARD_ISSUANCE_CHECK_DIGIT:
-        return "Сheck digit for number of card issuances";
+        return "Check digit for number of card issuances";
       case FT_CENTURY_DATE_OF_BIRTH:
         return "Century of birth";
       case FT_DL_CLASSCODE_A3_FROM:
@@ -4281,13 +4301,13 @@ class eVisualFieldType {
       case FT_PERSONTONOTIFY_ADDRESS:
         return "Notify person: Address";
       case FT_DS_CERTIFICATE_ISSUER:
-        return "DS Certificate Issuer";
+        return "DS certificate issuer";
       case FT_DS_CERTIFICATE_SUBJECT:
-        return "DS Certificate Subject";
+        return "DS certificate subject";
       case FT_DS_CERTIFICATE_VALIDFROM:
-        return "DS Certificate Valid From";
+        return "DS certificate valid from";
       case FT_DS_CERTIFICATE_VALIDTO:
-        return "DS Certificate Valid To";
+        return "DS certificate valid to";
       case FT_VRC_DATAOBJECT_ENTRY:
         return "Vehicle data from the DG1 data group";
       case FT_GRANDFATHERNAME:
@@ -4295,7 +4315,7 @@ class eVisualFieldType {
       case FT_HEALTH_NUMBER:
         return "Health insurance number";
       case FT_TYPE_APPROVAL_NUMBER:
-        return "Type approval number";
+        return "Type of approval number";
       case FT_ADMINISTRATIVE_NUMBER:
         return "Administrative number";
       case FT_DOCUMENT_DISCRIMINATOR:
@@ -4303,7 +4323,7 @@ class eVisualFieldType {
       case FT_DATA_DISCRIMINATOR:
         return "Data discriminator";
       case FT_ISO_ISSUER_ID_NUMBER:
-        return "ISO issuer ID number";
+        return "ID number of ISO issuer";
       case FT_SELECTEE_INDICATOR:
         return "Selectee indicator";
       case FT_MOTHER_SURNAME:
@@ -4319,9 +4339,9 @@ class eVisualFieldType {
       case FT_FATHER_DATEOFBIRTH:
         return "Father\'s date of birth";
       case FT_MOTHER_PERSONALNUMBER:
-        return "Mother\'s personal #";
+        return "Mother\'s personal number";
       case FT_FATHER_PERSONALNUMBER:
-        return "Father\'s personal #";
+        return "Father\'s personal number";
       case FT_MOTHER_PLACEOFBIRTH:
         return "Mother\'s place of birth";
       case FT_FATHER_PLACEOFBIRTH:
@@ -4476,6 +4496,30 @@ class eVisualFieldType {
         return "DL class code W notes";
       case FT_DLCLASSCODE_W_TO:
         return "DL class code W to";
+      case FT_CALIBER:
+        return "Caliber";
+      case FT_CITIZENSHIP_OF_FIRST_PERSON:
+        return "Citizenship of the first person";
+      case FT_CITIZENSHIP_OF_SECOND_PERSON:
+        return "Citizenship of the second person";
+      case FT_CVV:
+        return "CVV/CVC";
+      case FT_DATE_OF_BIRTH_OF_HUSBAND:
+        return "Date of birth of husband";
+      case FT_DATE_OF_BIRTH_OF_WIFE:
+        return "Date of birth of wife";
+      case FT_MAKE:
+        return "Make";
+      case FT_MODEL:
+        return "Model";
+      case FT_NUMBER_OF_CYLINDERS:
+        return "Number of cylinders";
+      case FT_SURNAME_OF_HUSBAND_AFTER_REGISTRATION:
+        return "Surname of husband  after registration";
+      case FT_SURNAME_OF_WIFE_AFTER_REGISTRATION:
+        return "Surname of wife after registration";
+      case FT_URL:
+        return "URL";
       default:
         return value.toString();
     }
@@ -4959,6 +5003,12 @@ class PKDResourceType {
         return CERTIFICATE_PA;
     }
   }
+}
+
+class ProcessingFinishedStatus {
+  static const int NOT_READY = 0;
+  static const int READY = 1;
+  static const int TIMEOUT = 2;
 }
 
 class RGLMeasureSystem {
