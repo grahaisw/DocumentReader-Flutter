@@ -142,8 +142,8 @@ class _MyAppState extends State<MyApp> {
         FlutterDocumentReaderApi.setRfidScenario(jsonEncode({"mrz": accessKey.replaceAll('^', '').replaceAll('\n', ''), "pacePasswordType": eRFID_Password_Type.PPT_MRZ}));
       else if (results.getTextFieldValueByType(159) != null && results.getTextFieldValueByType(159) != "") FlutterDocumentReaderApi.setRfidScenario(jsonEncode({"password": results.getTextFieldValueByType(159), "pacePasswordType": eRFID_Password_Type.PPT_CAN}));
 
-      customRFID();
-      // usualRFID();
+      // customRFID();
+      usualRFID();
     } else
       displayResults(results);
   }

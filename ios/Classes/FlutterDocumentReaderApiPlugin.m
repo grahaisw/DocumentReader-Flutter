@@ -1,5 +1,32 @@
 #import "FlutterDocumentReaderApiPlugin.h"
 
+FlutterEventSink completionEvent;
+FlutterEventSink databaseProgressEvent;
+
+@implementation CompletionStreamHandler
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+    completionEvent = eventSink;
+  return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+    completionEvent = nil;
+  return nil;
+}
+@end
+
+@implementation DatabaseProgressStreamHandler
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+    databaseProgressEvent = eventSink;
+  return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+    databaseProgressEvent = nil;
+  return nil;
+}
+@end
+
 @implementation FlutterDocumentReaderApiPlugin
 
 static FlutterMethodChannel * _channel;
@@ -21,7 +48,10 @@ typedef void (^Callback)(NSString* response);
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"flutter_document_reader_api" binaryMessenger:[registrar messenger]];
+    [[FlutterEventChannel eventChannelWithName:@"flutter_document_reader_api/event/completion" binaryMessenger:[registrar messenger]] setStreamHandler:[CompletionStreamHandler new]];
+    [[FlutterEventChannel eventChannelWithName:@"flutter_document_reader_api/event/database_progress" binaryMessenger:[registrar messenger]] setStreamHandler:[DatabaseProgressStreamHandler new]];
+    
+    FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"flutter_document_reader_api/method" binaryMessenger:[registrar messenger]];
     [FlutterDocumentReaderApiPlugin setChannel:channel];
     FlutterDocumentReaderApiPlugin* instance = [FlutterDocumentReaderApiPlugin new];
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -112,6 +142,8 @@ typedef void (^Callback)(NSString* response);
         [self clearPKDCertificates :successCallback :errorCallback];
     else if([action isEqualToString:@"readRFID"])
         [self readRFID :successCallback :errorCallback];
+    else if([action isEqualToString:@"getRfidSessionStatus"])
+        [self getRfidSessionStatus :successCallback :errorCallback];
     else if([action isEqualToString:@"setEnableCoreLogs"])
         [self setEnableCoreLogs :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"addPKDCertificates"])
@@ -138,6 +170,8 @@ typedef void (^Callback)(NSString* response);
         [self prepareDatabase :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"recognizeImage"])
         [self recognizeImage :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"setRfidSessionStatus"])
+        [self setRfidSessionStatus :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"recognizeImageFrame"])
         [self recognizeImageFrame :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else if([action isEqualToString:@"recognizeImageWithOpts"])
@@ -153,7 +187,6 @@ typedef void (^Callback)(NSString* response);
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
 }
-
 - (void) resetConfiguration:(Callback)successCallback :(Callback)errorCallback{
     [self result:@"resetConfiguration() is an android-anly method" :errorCallback];
 }
@@ -195,12 +228,10 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) startRFIDReader:(Callback)successCallback :(Callback)errorCallback{
-    if([RGLDocReader.shared isDocumentReaderIsReady])
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [RGLDocReader.shared startRFIDReaderFromPresenter:[[[UIApplication sharedApplication] keyWindow] rootViewController] completion:[self getCompletion :successCallback :errorCallback]];
-        });
-    else
-        [self result:@"document reader not ready" :successCallback];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RGLDocReader.shared startRFIDReaderFromPresenter:[[[UIApplication sharedApplication] keyWindow] rootViewController] completion:[self getCompletion]];
+    });
+    [self result:@"" :successCallback];
 }
 
 - (void) initializeReaderWithDatabasePath:(NSString*)licenseString :(NSString*)databasePath :(Callback)successCallback :(Callback)errorCallback{
@@ -212,11 +243,11 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) removeDatabase:(Callback)successCallback :(Callback)errorCallback{
-    [RGLDocReader.shared removeDatabase:^(BOOL successful, NSString * _Nullable error) {
+    [RGLDocReader.shared removeDatabase:^(BOOL successful, NSError * _Nullable error) {
         if (successful)
             [self result:@"database removed" :successCallback];
         else
-            [self result:[NSString stringWithFormat:@"%@/%@", @"database removal failed: ", error] :errorCallback];
+            [self result:[NSString stringWithFormat:@"%@/%@", @"database removal failed: ", error.description] :errorCallback];
     }];
 }
 
@@ -230,14 +261,12 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) showScanner:(Callback)successCallback :(Callback)errorCallback{
-    if([RGLDocReader.shared isDocumentReaderIsReady]){
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
             UIViewController *currentViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-            [RGLDocReader.shared showScanner:currentViewController completion:[self getCompletion :successCallback :errorCallback]];
+            [RGLDocReader.shared showScanner:currentViewController completion:[self getCompletion]];
         });
-    }else
-        [self result:@"document reader not ready" :successCallback];
+        [self result:@"" :successCallback];
 }
 
 - (void) recognizeImage:(NSMutableString*)base64 :(Callback)successCallback :(Callback)errorCallback{
@@ -245,18 +274,13 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) recognizeImages:(NSArray*)input :(Callback)successCallback :(Callback)errorCallback{
-    if([RGLDocReader.shared isDocumentReaderIsReady]){
         NSMutableArray<UIImage*>* images = [[NSMutableArray alloc] init];
-        for(__strong NSMutableString* base64 in input){
-            if(![[base64 substringToIndex:10] isEqualToString:@"data:image"])
-                base64 = [NSMutableString stringWithFormat: @"%@%@", @"data:image/jpeg;base64,", base64];
-            [images addObject:[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:base64]]]];
-        }
+        for(__strong NSMutableString* base64 in input)
+            [images addObject:[UIImage imageWithData:[[NSData alloc]initWithBase64EncodedString:base64 options:NSDataBase64DecodingIgnoreUnknownCharacters]]];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [RGLDocReader.shared recognizeImages:images completion:[self getCompletion :successCallback :errorCallback]];
+            [RGLDocReader.shared recognizeImages:images completion:[self getCompletion]];
         });
-    }else
-        [self result:@"document reader not ready" :successCallback];
+        [self result:@"" :successCallback];
 }
 
 - (void) recognizeImageWithCameraMode:(NSMutableString*)base64 :(BOOL)cameraMode :(Callback)successCallback :(Callback)errorCallback{
@@ -264,14 +288,10 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) recognizeImageWith:(NSMutableString*)base64 :(BOOL)cameraMode :(Callback)successCallback :(Callback)errorCallback{
-    if([RGLDocReader.shared isDocumentReaderIsReady]){
-        if(![[base64 substringToIndex:10] isEqualToString:@"data:image"])
-            base64 = [NSMutableString stringWithFormat: @"%@%@", @"data:image/jpeg;base64,", base64];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [RGLDocReader.shared recognizeImage:[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:base64]]] cameraMode:cameraMode completion:[self getCompletion :successCallback :errorCallback]];
+            [RGLDocReader.shared recognizeImage:[UIImage imageWithData:[[NSData alloc]initWithBase64EncodedString:base64 options:NSDataBase64DecodingIgnoreUnknownCharacters]] cameraMode:cameraMode completion:[self getCompletion]];
         });
-    } else
-        [self result:@"document reader not ready" :successCallback];
+        [self result:@"" :successCallback];
 }
 
 - (void) setConfig:(NSDictionary*)config :(Callback)successCallback :(Callback)errorCallback{
@@ -293,10 +313,8 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) readRFID:(Callback)successCallback :(Callback)errorCallback{
-    if([RGLDocReader.shared isDocumentReaderIsReady])
-        [RGLDocReader.shared readRFID:nil completion:[self getRFIDCompletion :successCallback :errorCallback]];
-    else
-        [self result:@"document reader not ready" :successCallback];
+        [RGLDocReader.shared readRFID:[self getRFIDNotificationCallback] completion:[self getRFIDCompletion]];
+        [self result:@"" :successCallback];
 }
 
 - (void) stopRFIDReader:(Callback)successCallback :(Callback)errorCallback{
@@ -406,6 +424,11 @@ typedef void (^Callback)(NSString* response);
     [self result:RGLDocReader.shared.rfidSessionStatus :successCallback];
 }
 
+- (void) setRfidSessionStatus:(NSString*)status :(Callback)successCallback :(Callback)errorCallback{
+    RGLDocReader.shared.rfidSessionStatus = status;
+    [self result:@"" :successCallback];
+}
+
 - (void) getCurrentScenario:(Callback)successCallback :(Callback)errorCallback{
     [self result:RGLDocReader.shared.processParams.scenario :successCallback];
 }
@@ -451,79 +474,48 @@ typedef void (^Callback)(NSString* response);
 }
 
 -(RGLDocumentReaderInitializationCompletion)getInitCompletion:(Callback)successCallback :(Callback)errorCallback{
-    return ^(BOOL successful, NSString * _Nullable error ) {
+    return ^(BOOL successful, NSError * _Nullable error ) {
         if (successful)
             [self result:@"init complete" :successCallback];
         else
-            [self result:[NSString stringWithFormat:@"%@/%@", @"init failed: ", error] :errorCallback];
+            [self result:[NSString stringWithFormat:@"%@/%@", @"init failed: ", error.description] :errorCallback];
     };
 }
 
 -(void (^_Nullable)(NSProgress * _Nonnull progress))getProgressHandler:(Callback)successCallback :(Callback)errorCallback{
-    return ^(NSProgress * _Nonnull progress) {
-        if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithDouble:progress.fractionCompleted * 100]){
-            [self sendProgress:progress];
-            [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithDouble:progress.fractionCompleted * 100]];
+    return ^(NSProgress * _Nonnull percentage) {
+        NSInteger progress = percentage.fractionCompleted * 100;
+        if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithInteger:progress]){
+            databaseProgressEvent([NSString stringWithFormat:@"%li", (long)progress]);
+            [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithInteger:progress]];
         }
     };
 }
 
 -(RGLDocumentReaderPrepareCompletion _Nonnull)getPrepareCompletion:(Callback)successCallback :(Callback)errorCallback{
-    return ^(BOOL successful, NSString * _Nullable error) {
+    return ^(BOOL successful, NSError * _Nullable error) {
         if (successful)
             [self result:@"database prepared" :successCallback];
         else
-            [self result:[NSString stringWithFormat:@"%@/%@", @"database preparation failed: ", error] :errorCallback];
+            [self result:[NSString stringWithFormat:@"%@/%@", @"database preparation failed: ", error.description] :errorCallback];
     };
 }
 
--(RGLDocumentReaderCompletion _Nonnull)getCompletion:(Callback)successCallback :(Callback)errorCallback{
-    return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSString * _Nullable error) {
-        switch (action) {
-            case RGLDocReaderActionCancel: {
-                [self result:@"Cancelled by user" :errorCallback];
-                break;
-            }
-
-            case RGLDocReaderActionComplete: {
-                [self result:[JSONConstructor resultsToJsonString:results] :successCallback];
-                break;
-            }
-
-            case RGLDocReaderActionError: {
-                [self result:[NSString stringWithFormat:@"%@/%@", @"error: ", error] :errorCallback];
-                break;
-            }
-
-            case RGLDocReaderActionProcess:
-            case RGLDocReaderActionMorePagesAvailable: {
-                break;
-            }
-        }
+-(RGLDocumentReaderCompletion _Nonnull)getCompletion {
+    return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]);
     };
 }
 
--(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion:(Callback)successCallback :(Callback)errorCallback{
-    return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSString * _Nullable error, RGLRFIDErrorCodes errorCode) {
-        switch (action) {
-            case RGLRFIDCompleteActionCancel: {
-                [self result:@"Cancelled by user" :errorCallback];
-                break;
-            }
+-(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion {
+    return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error, RGLRFIDErrorCodes errorCode) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]);
+    };
+}
 
-            case RGLRFIDCompleteActionComplete: {
-                [self result:[JSONConstructor resultsToJsonString:results] :successCallback];
-                break;
-            }
-
-            case RGLRFIDCompleteActionError: {
-                [self result:[NSString stringWithFormat:@"%@/%@", @"error: ", error] :errorCallback];
-                break;
-            }
-            case RGLRFIDCompleteActionSessionRestarted: {
-                break;
-            }
-        }
+-(RGLRFIDNotificationCallback _Nonnull)getRFIDNotificationCallback {
+    return ^(RGLRFIDNotificationAction notificationAction, RGLRFIDNotify* _Nullable notification) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]);
     };
 }
 

@@ -26,6 +26,10 @@
 +(NSMutableArray* _Nonnull )generateNSArrayNSNumber:(NSArray<NSNumber*>* _Nonnull) list;
 +(NSString* _Nullable)generateScenario:(RGLScenario* _Nullable) scenario;
 +(RGLPKDCertificate* _Nullable)RGLPKDCertificateFromJson:(NSDictionary* _Nullable) dict;
++(NSInteger)generateDocReaderAction:(RGLDocReaderAction)action;
++(NSInteger)generateRFIDCompleteAction:(RGLRFIDCompleteAction)action;
++(NSInteger)generateRFIDNotificationAction:(RGLRFIDNotificationAction)action;
++(NSString*_Nullable)generateCompletion:(NSInteger)action :(RGLDocumentReaderResults*_Nullable)results :(NSError*_Nullable)error :(RGLRFIDNotify*_Nullable)notify;
 
 @end
 #endif

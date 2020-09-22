@@ -466,6 +466,10 @@
         functionality.showCaptureButtonDelayFromDetect = [[options valueForKey:@"showCaptureButtonDelayFromDetect"] doubleValue];
     if([options valueForKey:@"showCaptureButtonDelayFromStart"] != nil)
         functionality.showCaptureButtonDelayFromStart = [[options valueForKey:@"showCaptureButtonDelayFromStart"] doubleValue];
+    if([options valueForKey:@"captureMode"] != nil)
+        functionality.captureMode = [[options valueForKey:@"captureMode"] intValue];
+    if([options valueForKey:@"displayMetadata"] != nil)
+        functionality.showMetadataInfo = [[options valueForKey:@"displayMetadata"] boolValue];
 }
 
 +(void)setProcessParams:(NSDictionary*)options :(RGLProcessParams*)processParams {
@@ -507,6 +511,20 @@
         processParams.doublePageSpread = [[options valueForKey:@"doublePageSpread"] boolValue];
     if([options valueForKey:@"barcodeParserType"] != nil)
         processParams.barcodeParserType = [[options valueForKey:@"barcodeParserType"] integerValue];
+    if([options valueForKey:@"timeout"] != nil)
+        processParams.timeout = [[options valueForKey:@"timeout"] doubleValue];
+    if([options valueForKey:@"timeoutFromFirstDetect"] != nil)
+        processParams.timeoutFromFirstDetect = [[options valueForKey:@"timeoutFromFirstDetect"] doubleValue];
+    if([options valueForKey:@"timeoutFromFirstDocType"] != nil)
+        processParams.timeoutFromFirstDocType = [[options valueForKey:@"timeoutFromFirstDocType"] doubleValue];
+    if([options valueForKey:@"manualCrop"] != nil)
+        processParams.manualCrop = [[options valueForKey:@"manualCrop"] boolValue];
+    if([options valueForKey:@"perspectiveAngle"] != nil)
+        processParams.perspectiveAngle = [[options valueForKey:@"perspectiveAngle"] integerValue];
+    if([options valueForKey:@"minDPI"] != nil)
+        processParams.minDPI = [[options valueForKey:@"minDPI"] integerValue];
+    if([options valueForKey:@"integralImage"] != nil)
+        processParams.integralImage = [[options valueForKey:@"integralImage"] boolValue];
 }
 
 +(NSMutableDictionary *)getCustomization:(RGLCustomization*)customization {
@@ -592,6 +610,8 @@
     result[@"rfidEnabled"] = [NSNumber numberWithBool:functionality.rfidEnabled];
     result[@"showCaptureButtonDelayFromDetect"] = [NSNumber numberWithDouble:functionality.showCaptureButtonDelayFromDetect];
     result[@"showCaptureButtonDelayFromStart"] = [NSNumber numberWithDouble:functionality.showCaptureButtonDelayFromStart];
+    result[@"captureMode"] = [NSNumber numberWithInteger:functionality.captureMode];
+    result[@"displayMetadata"] = [NSNumber numberWithBool:functionality.showMetadataInfo];
 
     return result;
 }
@@ -621,6 +641,13 @@
     result[@"processParamsDictionary"] = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:processParams.processParamsDictionary options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
     result[@"coreParamsDictionary"] = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:processParams.coreParamsDictionary options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
     result[@"rfidParamsDictionary"] = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:processParams.rfidParamsDictionary options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding];
+    result[@"timeout"] = [NSNumber numberWithDouble:processParams.timeout];
+    result[@"timeoutFromFirstDetect"] = [NSNumber numberWithDouble:processParams.timeoutFromFirstDetect];
+    result[@"timeoutFromFirstDocType"] = [NSNumber numberWithDouble:processParams.timeoutFromFirstDocType];
+    result[@"manualCrop"] = [NSNumber numberWithBool:processParams.manualCrop];
+    result[@"perspectiveAngle"] = [NSNumber numberWithInteger:processParams.perspectiveAngle];
+    result[@"minDPI"] = [NSNumber numberWithInteger:processParams.minDPI];
+    result[@"integralImage"] = [NSNumber numberWithBool:processParams.integralImage];
 
     return result;
 }

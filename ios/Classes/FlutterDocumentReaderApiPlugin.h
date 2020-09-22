@@ -9,3 +9,9 @@
 @property (class) NSNumber* _Nullable databasePercentageDownloaded;
 
 @end
+
+@interface CompletionStreamHandler : NSObject <FlutterStreamHandler>
+@end
+
+@interface DatabaseProgressStreamHandler : NSObject <FlutterStreamHandler>
+@end
