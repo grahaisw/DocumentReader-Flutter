@@ -1,92 +1,85 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'dart:typed_data';
-import 'dart:convert';
 
 // Classes
 
 class Scenario {
-  String name;
-  String caption;
-  String description;
-  bool uvTorch;
   int frame;
-  double frameKWHLandscape;
-  double frameKWHPortrait;
+  int frameOrientation;
+  bool uvTorch;
   bool barcodeExt;
   bool faceExt;
   bool multiPageOff;
-  int frameOrientation;
   bool seriesProcessMode;
+  double frameKWHLandscape;
+  double frameKWHPortrait;
   double frameKWHDoublePageSpreadPortrait;
   double frameKWHDoublePageSpreadLandscape;
+  String name;
+  String caption;
+  String description;
 
-  static fromJson(jsonObject) {
+  static Scenario fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Scenario();
-    result.name = jsonObject["name"];
-    result.caption = jsonObject["caption"];
-    result.description = jsonObject["description"];
-    result.uvTorch = jsonObject["uvTorch"];
     result.frame = jsonObject["frame"];
-    result.frameKWHLandscape = jsonObject["frameKWHLandscape"] == null ? null : jsonObject["frameKWHLandscape"].toDouble();
-    result.frameKWHPortrait = jsonObject["frameKWHPortrait"] == null ? null : jsonObject["frameKWHPortrait"].toDouble();
+    result.frameOrientation = jsonObject["frameOrientation"];
+    result.uvTorch = jsonObject["uvTorch"];
     result.barcodeExt = jsonObject["barcodeExt"];
     result.faceExt = jsonObject["faceExt"];
     result.multiPageOff = jsonObject["multiPageOff"];
-    result.frameOrientation = jsonObject["frameOrientation"];
     result.seriesProcessMode = jsonObject["seriesProcessMode"];
+    result.frameKWHLandscape = jsonObject["frameKWHLandscape"] == null ? null : jsonObject["frameKWHLandscape"].toDouble();
+    result.frameKWHPortrait = jsonObject["frameKWHPortrait"] == null ? null : jsonObject["frameKWHPortrait"].toDouble();
     result.frameKWHDoublePageSpreadPortrait = jsonObject["frameKWHDoublePageSpreadPortrait"] == null ? null : jsonObject["frameKWHDoublePageSpreadPortrait"].toDouble();
     result.frameKWHDoublePageSpreadLandscape = jsonObject["frameKWHDoublePageSpreadLandscape"] == null ? null : jsonObject["frameKWHDoublePageSpreadLandscape"].toDouble();
+    result.name = jsonObject["name"];
+    result.caption = jsonObject["caption"];
+    result.description = jsonObject["description"];
     return result;
   }
 }
 
-class FieldRect {
+class Rect {
   int bottom;
+  int top;
   int left;
   int right;
-  int top;
 
-  FieldRect(int left, int top, int right, int bottom) {
-    this.left = left;
-    this.top = top;
-    this.right = right;
-    this.bottom = bottom;
-  }
-
-  static FieldRect fromJson(jsonObject) {
+  static Rect fromJson(jsonObject) {
     if (jsonObject == null) return null;
-    return new FieldRect(jsonObject["left"], jsonObject["top"], jsonObject["right"], jsonObject["bottom"]);
+    var result = new Rect();
+    result.bottom = jsonObject["bottom"];
+    result.top = jsonObject["top"];
+    result.left = jsonObject["left"];
+    result.right = jsonObject["right"];
+    return result;
   }
 }
 
 class DocumentReaderGraphicField {
   int sourceType;
   int fieldType;
-  String fieldName;
   int lightType;
-  String lightName;
-  FieldRect fieldRect;
-  String value;
   int pageIndex;
-  int width;
-  int height;
+  String fieldName;
+  String lightName;
+  String value;
+  Rect fieldRect;
 
   static DocumentReaderGraphicField fromJson(jsonObject) {
     if (jsonObject == null) return null;
-    var field = new DocumentReaderGraphicField();
-    field.sourceType = jsonObject["sourceType"];
-    field.fieldType = jsonObject["fieldType"];
-    field.fieldName = jsonObject["fieldName"];
-    field.lightType = jsonObject["lightType"];
-    field.lightName = jsonObject["lightName"];
-    field.fieldRect = FieldRect.fromJson(jsonObject["fieldRect"]);
-    field.value = jsonObject["value"];
-    field.width = jsonObject["width"];
-    field.height = jsonObject["height"];
-    field.pageIndex = jsonObject["pageIndex"];
-    return field;
+    var result = new DocumentReaderGraphicField();
+    result.sourceType = jsonObject["sourceType"];
+    result.fieldType = jsonObject["fieldType"];
+    result.lightType = jsonObject["lightType"];
+    result.pageIndex = jsonObject["pageIndex"];
+    result.fieldName = jsonObject["fieldName"];
+    result.lightName = jsonObject["lightName"];
+    result.value = jsonObject["value"];
+    result.fieldRect = Rect.fromJson(jsonObject["fieldRect"]);
+    return result;
   }
 }
 
@@ -96,37 +89,32 @@ class DocumentReaderGraphicResult {
   static DocumentReaderGraphicResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderGraphicResult();
-
-    if (jsonObject["fields"] != null) for (var field in jsonObject["fields"]) result.fields.add(DocumentReaderGraphicField.fromJson(field));
-
+    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderGraphicField.fromJson(item));
     return result;
   }
 }
 
 class DocumentReaderValue {
-  int sourceType;
-  String value;
-  String originalValue;
   int pageIndex;
-  FieldRect boundRect;
+  int sourceType;
   int validity;
   int probability;
+  String value;
+  String originalValue;
+  Rect boundRect;
   Map<int, int> comparison = {};
 
   static DocumentReaderValue fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderValue();
-
-    result.sourceType = jsonObject["sourceType"];
-    result.value = jsonObject["value"];
-    result.originalValue = jsonObject["originalValue"];
     result.pageIndex = jsonObject["pageIndex"];
-    result.boundRect = FieldRect.fromJson(jsonObject["boundRect"]);
+    result.sourceType = jsonObject["sourceType"];
     result.validity = jsonObject["validity"];
     result.probability = jsonObject["probability"];
-
+    result.value = jsonObject["value"];
+    result.originalValue = jsonObject["originalValue"];
+    result.boundRect = Rect.fromJson(jsonObject["boundRect"]);
     if (jsonObject["comparison"] != null) jsonObject["comparison"].forEach((k, v) => result.comparison[int.parse(k)] = v);
-
     return result;
   }
 }
@@ -134,25 +122,22 @@ class DocumentReaderValue {
 class DocumentReaderTextField {
   int fieldType;
   int lcid;
+  int status;
   String lcidName;
   String fieldName;
-  int status;
   DocumentReaderValue value;
   List<DocumentReaderValue> values = [];
 
   static DocumentReaderTextField fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderTextField();
-
     result.fieldType = jsonObject["fieldType"];
     result.lcid = jsonObject["lcid"];
+    result.status = jsonObject["status"];
     result.lcidName = jsonObject["lcidName"];
     result.fieldName = jsonObject["fieldName"];
-    result.status = jsonObject["status"];
     result.value = DocumentReaderValue.fromJson(jsonObject["value"]);
-
-    if (jsonObject["values"] != null) for (var value in jsonObject["values"]) result.values.add(DocumentReaderValue.fromJson(value));
-
+    if (jsonObject["values"] != null) for (var item in jsonObject["values"]) result.values.add(DocumentReaderValue.fromJson(item));
     return result;
   }
 }
@@ -164,11 +149,8 @@ class DocumentReaderTextResult {
   static DocumentReaderTextResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderTextResult();
-
     result.status = jsonObject["status"];
-
-    if (jsonObject["fields"] != null) for (var field in jsonObject["fields"]) result.fields.add(DocumentReaderTextField.fromJson(field));
-
+    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderTextField.fromJson(item));
     return result;
   }
 }
@@ -180,10 +162,8 @@ class Coordinate {
   static Coordinate fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Coordinate();
-
     result.x = jsonObject["x"];
     result.y = jsonObject["y"];
-
     return result;
   }
 }
@@ -192,7 +172,6 @@ class ElementPosition {
   int docFormat;
   int width;
   int height;
-  double angle;
   int dpi;
   int pageIndex;
   int inverse;
@@ -200,6 +179,7 @@ class ElementPosition {
   int objArea;
   int objIntAngleDev;
   int resultStatus;
+  double angle;
   Coordinate center;
   Coordinate leftTop;
   Coordinate leftBottom;
@@ -209,11 +189,9 @@ class ElementPosition {
   static ElementPosition fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ElementPosition();
-
     result.docFormat = jsonObject["docFormat"];
     result.width = jsonObject["width"];
     result.height = jsonObject["height"];
-    result.angle = jsonObject["angle"] == null ? null : jsonObject["angle"].toDouble();
     result.dpi = jsonObject["dpi"];
     result.pageIndex = jsonObject["pageIndex"];
     result.inverse = jsonObject["inverse"];
@@ -221,12 +199,12 @@ class ElementPosition {
     result.objArea = jsonObject["objArea"];
     result.objIntAngleDev = jsonObject["objIntAngleDev"];
     result.resultStatus = jsonObject["resultStatus"];
+    result.angle = jsonObject["angle"] == null ? null : jsonObject["angle"].toDouble();
     result.center = Coordinate.fromJson(jsonObject["center"]);
     result.leftTop = Coordinate.fromJson(jsonObject["leftTop"]);
     result.leftBottom = Coordinate.fromJson(jsonObject["leftBottom"]);
     result.rightTop = Coordinate.fromJson(jsonObject["rightTop"]);
     result.rightBottom = Coordinate.fromJson(jsonObject["rightBottom"]);
-
     return result;
   }
 }
@@ -237,13 +215,11 @@ class ImageQuality {
   int type;
 
   static ImageQuality fromJson(jsonObject) {
-    if (jsonObject != null) return null;
+    if (jsonObject == null) return null;
     var result = new ImageQuality();
-
     result.featureType = jsonObject["featureType"];
     result.result = jsonObject["result"];
     result.type = jsonObject["type"];
-
     return result;
   }
 }
@@ -256,46 +232,40 @@ class ImageQualityGroup {
   static ImageQualityGroup fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ImageQualityGroup();
-
     result.count = jsonObject["count"];
     result.result = jsonObject["result"];
-
-    if (jsonObject["imageQualityList"] != null) for (var imageQuality in jsonObject["imageQualityList"]) result.imageQualityList.add(ImageQuality.fromJson(imageQuality));
-
+    if (jsonObject["imageQualityList"] != null) for (var item in jsonObject["imageQualityList"]) result.imageQualityList.add(ImageQuality.fromJson(item));
     return result;
   }
 }
 
 class DocumentReaderDocumentType {
-  String name;
+  int pageIndex;
   int documentID;
-  String ICAOCode;
   int dType;
-  List<int> FDSID = [];
   int dFormat;
   bool dMRZ;
+  String name;
+  String ICAOCode;
   String dDescription;
   String dYear;
   String dCountryName;
-  int pageIndex;
+  List<int> FDSID = [];
 
   static DocumentReaderDocumentType fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderDocumentType();
-
-    result.name = jsonObject["name"];
+    result.pageIndex = jsonObject["pageIndex"];
     result.documentID = jsonObject["documentID"];
-    result.ICAOCode = jsonObject["ICAOCode"];
     result.dType = jsonObject["dType"];
     result.dFormat = jsonObject["dFormat"];
     result.dMRZ = jsonObject["dMRZ"];
+    result.name = jsonObject["name"];
+    result.ICAOCode = jsonObject["ICAOCode"];
     result.dDescription = jsonObject["dDescription"];
     result.dYear = jsonObject["dYear"];
     result.dCountryName = jsonObject["dCountryName"];
-    result.pageIndex = jsonObject["pageIndex"];
-
-    if (jsonObject["FDSID"] != null) for (var FDSID in jsonObject["FDSID"]) result.FDSID.add(FDSID);
-
+    if (jsonObject["FDSID"] != null) for (var item in jsonObject["FDSID"]) result.FDSID.add(item);
     return result;
   }
 }
@@ -309,12 +279,10 @@ class DocumentReaderJsonResultGroup {
   static DocumentReaderJsonResultGroup fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderJsonResultGroup();
-
     result.resultType = jsonObject["resultType"];
     result.lightType = jsonObject["lightType"];
     result.pageIdx = jsonObject["pageIdx"];
     result.jsonResult = jsonObject["jsonResult"];
-
     return result;
   }
 }
@@ -325,9 +293,7 @@ class DocumentReaderJsonResult {
   static DocumentReaderJsonResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderJsonResult();
-
-    if (jsonObject["results"] != null) for (var r in jsonObject["results"]) result.results.add(DocumentReaderJsonResultGroup.fromJson(r));
-
+    if (jsonObject["results"] != null) for (var item in jsonObject["results"]) result.results.add(DocumentReaderJsonResultGroup.fromJson(item));
     return result;
   }
 }
@@ -335,68 +301,61 @@ class DocumentReaderJsonResult {
 class DocumentReaderNotification {
   int code;
   int value;
+  int number;
 
   static DocumentReaderNotification fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderNotification();
-
     result.code = jsonObject["code"];
     result.value = jsonObject["value"];
-
+    result.number = jsonObject["number"];
     return result;
   }
 }
 
 class AccessControlProcedureType {
   int activeOptionIdx;
-  List<int> notifications = [];
-  int status;
   int type;
+  int status;
+  List<int> notifications = [];
 
   static AccessControlProcedureType fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new AccessControlProcedureType();
-
     result.activeOptionIdx = jsonObject["activeOptionIdx"];
-    result.status = jsonObject["status"];
     result.type = jsonObject["type"];
-
-    if (jsonObject["notifications"] != null) for (var notification in jsonObject["notifications"]) result.notifications.add(notification);
-
+    result.status = jsonObject["status"];
+    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
     return result;
   }
 }
 
 class FileData {
-  String data;
   int length;
-  int status;
   int type;
+  int status;
+  String data;
 
   static FileData fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new FileData();
-
-    result.data = jsonObject["data"];
     result.length = jsonObject["length"];
-    result.status = jsonObject["status"];
     result.type = jsonObject["type"];
-
+    result.status = jsonObject["status"];
+    result.data = jsonObject["data"];
     return result;
   }
 }
 
 class CertificateData {
-  String data;
   int length;
+  String data;
 
   static CertificateData fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CertificateData();
-
-    result.data = jsonObject["data"];
     result.length = jsonObject["length"];
-
+    result.data = jsonObject["data"];
     return result;
   }
 }
@@ -407,20 +366,18 @@ class SecurityObjectCertificates {
   static SecurityObjectCertificates fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SecurityObjectCertificates();
-
     result.securityObject = CertificateData.fromJson(jsonObject["securityObject"]);
-
     return result;
   }
 }
 
 class File {
-  FileData fileData;
-  String fileID;
-  int pAStatus;
-  int readingStatus;
   int readingTime;
   int type;
+  int pAStatus;
+  int readingStatus;
+  String fileID;
+  FileData fileData;
   SecurityObjectCertificates certificates;
   List<int> docFieldsText = [];
   List<int> docFieldsGraphics = [];
@@ -430,67 +387,59 @@ class File {
   static File fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new File();
-
-    result.fileData = FileData.fromJson(jsonObject["fileData"]);
-    result.fileID = jsonObject["fileID"];
-    result.pAStatus = jsonObject["pAStatus"];
-    result.readingStatus = jsonObject["readingStatus"];
     result.readingTime = jsonObject["readingTime"];
     result.type = jsonObject["type"];
+    result.pAStatus = jsonObject["pAStatus"];
+    result.readingStatus = jsonObject["readingStatus"];
+    result.fileID = jsonObject["fileID"];
+    result.fileData = FileData.fromJson(jsonObject["fileData"]);
     result.certificates = SecurityObjectCertificates.fromJson(jsonObject["certificates"]);
-
-    if (jsonObject["notifications"] != null) for (var notification in jsonObject["notifications"]) result.notifications.add(notification);
-    if (jsonObject["docFieldsText"] != null) for (var docFieldText in jsonObject["docFieldsText"]) result.docFieldsText.add(docFieldText);
-    if (jsonObject["docFieldsGraphics"] != null) for (var docFieldGraphics in jsonObject["docFieldsGraphics"]) result.docFieldsGraphics.add(docFieldGraphics);
-    if (jsonObject["docFieldsOriginals"] != null) for (var docFieldOriginals in jsonObject["docFieldsOriginals"]) result.docFieldsOriginals.add(docFieldOriginals);
-
+    if (jsonObject["docFieldsText"] != null) for (var item in jsonObject["docFieldsText"]) result.docFieldsText.add(item);
+    if (jsonObject["docFieldsGraphics"] != null) for (var item in jsonObject["docFieldsGraphics"]) result.docFieldsGraphics.add(item);
+    if (jsonObject["docFieldsOriginals"] != null) for (var item in jsonObject["docFieldsOriginals"]) result.docFieldsOriginals.add(item);
+    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
     return result;
   }
 }
 
 class Application {
+  int type;
+  int status;
   String applicationID;
   String dataHashAlgorithm;
-  List<File> files = [];
-  int status;
-  int type;
   String unicodeVersion;
   String version;
+  List<File> files = [];
 
   static Application fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Application();
-
+    result.type = jsonObject["type"];
+    result.status = jsonObject["status"];
     result.applicationID = jsonObject["applicationID"];
     result.dataHashAlgorithm = jsonObject["dataHashAlgorithm"];
-    result.status = jsonObject["status"];
-    result.type = jsonObject["type"];
     result.unicodeVersion = jsonObject["unicodeVersion"];
     result.version = jsonObject["version"];
-
-    if (jsonObject["files"] != null) for (var file in jsonObject["files"]) result.files.add(File.fromJson(file));
-
+    if (jsonObject["files"] != null) for (var item in jsonObject["files"]) result.files.add(File.fromJson(item));
     return result;
   }
 }
 
 class Value {
-  String data;
   int length;
-  int status;
   int type;
+  int status;
+  String data;
   String format;
 
   static Value fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Value();
-
-    result.data = jsonObject["data"];
     result.length = jsonObject["length"];
-    result.status = jsonObject["status"];
     result.type = jsonObject["type"];
+    result.status = jsonObject["status"];
+    result.data = jsonObject["data"];
     result.format = jsonObject["format"];
-
     return result;
   }
 }
@@ -502,10 +451,8 @@ class Attribute {
   static Attribute fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Attribute();
-
     result.type = jsonObject["type"];
     result.value = Value.fromJson(jsonObject["value"]);
-
     return result;
   }
 }
@@ -518,12 +465,9 @@ class Authority {
   static Authority fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Authority();
-
     result.data = jsonObject["data"];
     result.friendlyName = Value.fromJson(jsonObject["friendlyName"]);
-
-    if (jsonObject["attributes"] != null) for (var attribute in jsonObject["attributes"]) result.attributes.add(Attribute.fromJson(attribute));
-
+    if (jsonObject["attributes"] != null) for (var item in jsonObject["attributes"]) result.attributes.add(Attribute.fromJson(item));
     return result;
   }
 }
@@ -535,10 +479,8 @@ class Extension {
   static Extension fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Extension();
-
     result.data = jsonObject["data"];
     result.type = jsonObject["type"];
-
     return result;
   }
 }
@@ -548,118 +490,103 @@ class Validity {
   Value notBefore;
 
   static Validity fromJson(jsonObject) {
-    if (jsonObject != null) return null;
+    if (jsonObject == null) return null;
     var result = new Validity();
-
     result.notAfter = Value.fromJson(jsonObject["notAfter"]);
     result.notBefore = Value.fromJson(jsonObject["notBefore"]);
-
     return result;
   }
 }
 
 class CertificateChain {
-  Value fileName;
-  Authority issuer;
   int origin;
+  int type;
+  int version;
   int paStatus;
   String serialNumber;
   String signatureAlgorithm;
-  Authority subject;
   String subjectPKAlgorithm;
-  int type;
+  Value fileName;
   Validity validity;
-  int version;
-  List<Extension> extensions = [];
+  Authority issuer;
+  Authority subject;
   List<int> notifications = [];
+  List<Extension> extensions = [];
 
   static CertificateChain fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CertificateChain();
-
-    result.fileName = Value.fromJson(jsonObject["fileName"]);
-    result.issuer = Authority.fromJson(jsonObject["issuer"]);
     result.origin = jsonObject["origin"];
+    result.type = jsonObject["type"];
+    result.version = jsonObject["version"];
     result.paStatus = jsonObject["paStatus"];
     result.serialNumber = jsonObject["serialNumber"];
     result.signatureAlgorithm = jsonObject["signatureAlgorithm"];
-    result.subject = Authority.fromJson(jsonObject["subject"]);
     result.subjectPKAlgorithm = jsonObject["subjectPKAlgorithm"];
-    result.type = jsonObject["type"];
+    result.fileName = Value.fromJson(jsonObject["fileName"]);
     result.validity = Validity.fromJson(jsonObject["validity"]);
-    result.version = jsonObject["version"];
-
-    if (jsonObject["extensions"] != null) for (var extension in jsonObject["extensions"]) result.extensions.add(Extension.fromJson(extension));
-    if (jsonObject["notifications"] != null) for (var notification in jsonObject["notifications"]) result.notifications.add(notification);
-
+    result.issuer = Authority.fromJson(jsonObject["issuer"]);
+    result.subject = Authority.fromJson(jsonObject["subject"]);
+    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
+    if (jsonObject["extensions"] != null) for (var item in jsonObject["extensions"]) result.extensions.add(Extension.fromJson(item));
     return result;
   }
 }
 
 class SignerInfo {
+  int version;
+  int paStatus;
   String dataToHash;
   String digestAlgorithm;
-  int paStatus;
   String signatureAlgorithm;
-  int version;
-  Authority issuer;
   Value serialNumber;
   Value signature;
   Value subjectKeyIdentifier;
+  Authority issuer;
+  List<int> notifications = [];
   List<Extension> signedAttributes = [];
   List<CertificateChain> certificateChain = [];
-  List<int> notifications = [];
 
   static SignerInfo fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SignerInfo();
-
+    result.version = jsonObject["version"];
+    result.paStatus = jsonObject["paStatus"];
     result.dataToHash = jsonObject["dataToHash"];
     result.digestAlgorithm = jsonObject["digestAlgorithm"];
-    result.paStatus = jsonObject["paStatus"];
     result.signatureAlgorithm = jsonObject["signatureAlgorithm"];
-    result.version = jsonObject["version"];
-    result.issuer = Authority.fromJson(jsonObject["issuer"]);
     result.serialNumber = Value.fromJson(jsonObject["serialNumber"]);
     result.signature = Value.fromJson(jsonObject["signature"]);
     result.subjectKeyIdentifier = Value.fromJson(jsonObject["subjectKeyIdentifier"]);
-
-    if (jsonObject["signedAttributes"] != null) for (var signedAttribute in jsonObject["signedAttributes"]) result.signedAttributes.add(Extension.fromJson(signedAttribute));
-    if (jsonObject["certificateChain"] != null) for (var certificateChain in jsonObject["certificateChain"]) result.certificateChain.add(CertificateChain.fromJson(certificateChain));
-    if (jsonObject["notifications"] != null) for (var notification in jsonObject["notifications"]) result.notifications.add(notification);
-
+    result.issuer = Authority.fromJson(jsonObject["issuer"]);
+    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
+    if (jsonObject["signedAttributes"] != null) for (var item in jsonObject["signedAttributes"]) result.signedAttributes.add(Extension.fromJson(item));
+    if (jsonObject["certificateChain"] != null) for (var item in jsonObject["certificateChain"]) result.certificateChain.add(CertificateChain.fromJson(item));
     return result;
   }
 }
 
 class SecurityObject {
   int fileReference;
-  String objectType;
   int version;
-  List<SignerInfo> signerInfos = [];
+  String objectType;
   List<int> notifications = [];
+  List<SignerInfo> signerInfos = [];
 
   static SecurityObject fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SecurityObject();
-
     result.fileReference = jsonObject["fileReference"];
-    result.objectType = jsonObject["objectType"];
     result.version = jsonObject["version"];
-
-    if (jsonObject["signerInfos"] != null) for (var signerInfo in jsonObject["signerInfos"]) result.signerInfos.add(SignerInfo.fromJson(signerInfo));
-    if (jsonObject["notifications"] != null) for (var notification in jsonObject["notifications"]) result.notifications.add(notification);
-
+    result.objectType = jsonObject["objectType"];
+    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
+    if (jsonObject["signerInfos"] != null) for (var item in jsonObject["signerInfos"]) result.signerInfos.add(SignerInfo.fromJson(item));
     return result;
   }
 }
 
 class CardProperties {
   int aTQA;
-  String aTQB;
-  String aTR;
-  String baudrate1;
-  String baudrate2;
   int bitRateR;
   int bitRateS;
   int chipTypeA;
@@ -668,17 +595,16 @@ class CardProperties {
   int sAK;
   bool support4;
   bool supportMifare;
+  String aTQB;
+  String aTR;
+  String baudrate1;
+  String baudrate2;
   String uID;
 
   static CardProperties fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CardProperties();
-
     result.aTQA = jsonObject["aTQA"];
-    result.aTQB = jsonObject["aTQB"];
-    result.aTR = jsonObject["aTR"];
-    result.baudrate1 = jsonObject["baudrate1"];
-    result.baudrate2 = jsonObject["baudrate2"];
     result.bitRateR = jsonObject["bitRateR"];
     result.bitRateS = jsonObject["bitRateS"];
     result.chipTypeA = jsonObject["chipTypeA"];
@@ -687,40 +613,74 @@ class CardProperties {
     result.sAK = jsonObject["sAK"];
     result.support4 = jsonObject["support4"];
     result.supportMifare = jsonObject["supportMifare"];
+    result.aTQB = jsonObject["aTQB"];
+    result.aTR = jsonObject["aTR"];
+    result.baudrate1 = jsonObject["baudrate1"];
+    result.baudrate2 = jsonObject["baudrate2"];
     result.uID = jsonObject["uID"];
-
     return result;
   }
 }
 
 class RFIDSessionData {
-  List<AccessControlProcedureType> accessControls = [];
-  List<Application> applications = [];
-  List<SecurityObject> securityObjects = [];
-  CardProperties cardProperties;
   int totalBytesReceived;
   int totalBytesSent;
   int status;
   int extLeSupport;
   int processTime;
-  RFIDSessionData sessionDataStatus;
+  CardProperties cardProperties;
+  RFIDSessionDataStatus sessionDataStatus;
+  List<AccessControlProcedureType> accessControls = [];
+  List<Application> applications = [];
+  List<SecurityObject> securityObjects = [];
 
   static RFIDSessionData fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new RFIDSessionData();
-
-    result.cardProperties = CardProperties.fromJson(jsonObject["result"]);
     result.totalBytesReceived = jsonObject["totalBytesReceived"];
     result.totalBytesSent = jsonObject["totalBytesSent"];
     result.status = jsonObject["status"];
     result.extLeSupport = jsonObject["extLeSupport"];
     result.processTime = jsonObject["processTime"];
-    result.sessionDataStatus = RFIDSessionData.fromJson(jsonObject["sessionDataStatus"]);
+    result.cardProperties = CardProperties.fromJson(jsonObject["cardProperties"]);
+    result.sessionDataStatus = RFIDSessionDataStatus.fromJson(jsonObject["sessionDataStatus"]);
+    if (jsonObject["accessControls"] != null) for (var item in jsonObject["accessControls"]) result.accessControls.add(AccessControlProcedureType.fromJson(item));
+    if (jsonObject["applications"] != null) for (var item in jsonObject["applications"]) result.applications.add(Application.fromJson(item));
+    if (jsonObject["securityObjects"] != null) for (var item in jsonObject["securityObjects"]) result.securityObjects.add(SecurityObject.fromJson(item));
+    return result;
+  }
+}
 
-    if (jsonObject["accessControls"] != null) for (var accessControl in jsonObject["accessControls"]) result.accessControls.add(AccessControlProcedureType.fromJson(accessControl));
-    if (jsonObject["applications"] != null) for (var application in jsonObject["applications"]) result.applications.add(Application.fromJson(application));
-    if (jsonObject["securityObjects"] != null) for (var securityObject in jsonObject["securityObjects"]) result.securityObjects.add(SecurityObject.fromJson(securityObject));
+class DocumentReaderAuthenticityCheck {
+  int type;
+  int status;
+  String typeName;
+  int pageIndex;
+  List<DocumentReaderAuthenticityElement> elements = [];
 
+  static DocumentReaderAuthenticityCheck fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderAuthenticityCheck();
+    result.type = jsonObject["type"];
+    result.status = jsonObject["status"];
+    result.typeName = jsonObject["typeName"];
+    result.pageIndex = jsonObject["pageIndex"];
+    if (jsonObject["elements"] != null) for (var item in jsonObject["elements"]) result.elements.add(DocumentReaderAuthenticityElement.fromJson(item));
+    return result;
+  }
+}
+
+class PDF417Info {
+  int errorLevel;
+  int columns;
+  int rows;
+
+  static PDF417Info fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new PDF417Info();
+    result.errorLevel = jsonObject["errorLevel"];
+    result.columns = jsonObject["columns"];
+    result.rows = jsonObject["rows"];
     return result;
   }
 }
@@ -734,7 +694,7 @@ class RFIDSessionDataStatus {
   int TA;
   int overallStatus;
 
-  static fromJson(jsonObject) {
+  static RFIDSessionDataStatus fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new RFIDSessionDataStatus();
     result.AA = jsonObject["AA"];
@@ -754,9 +714,7 @@ class DocumentReaderBarcodeResult {
   static DocumentReaderBarcodeResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderBarcodeResult();
-
-    if (jsonObject["fields"] != null) for (var field in jsonObject["fields"]) result.fields.add(DocumentReaderBarcodeField.fromJson(field));
-
+    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderBarcodeField.fromJson(item));
     return result;
   }
 }
@@ -764,20 +722,18 @@ class DocumentReaderBarcodeResult {
 class DocumentReaderBarcodeField {
   int barcodeType;
   int status;
+  int pageIndex;
   PDF417Info pdf417Info;
   Uint8List data;
-  int pageIndex;
 
   static DocumentReaderBarcodeField fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderBarcodeField();
-
     result.barcodeType = jsonObject["barcodeType"];
     result.status = jsonObject["status"];
+    result.pageIndex = jsonObject["pageIndex"];
     result.pdf417Info = PDF417Info.fromJson(jsonObject["pdf417Info"]);
     result.data = jsonObject["data"];
-    result.pageIndex = jsonObject["pageIndex"];
-
     return result;
   }
 }
@@ -789,33 +745,8 @@ class DocumentReaderAuthenticityResult {
   static DocumentReaderAuthenticityResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityResult();
-
     result.status = jsonObject["status"];
-
-    if (jsonObject["checks"] != null) for (var check in jsonObject["checks"]) result.checks.add(DocumentReaderAuthenticityCheck.fromJson(check));
-
-    return result;
-  }
-}
-
-class DocumentReaderAuthenticityCheck {
-  int type;
-  String typeName;
-  int status;
-  int pageIndex;
-  List<DocumentReaderAuthenticityElement> elements = [];
-
-  static DocumentReaderAuthenticityCheck fromJson(jsonObject) {
-    if (jsonObject == null) return null;
-    var result = new DocumentReaderAuthenticityCheck();
-
-    result.type = jsonObject["type"];
-    result.status = jsonObject["status"];
-    result.pageIndex = jsonObject["pageIndex"];
-    result.typeName = jsonObject["typeName"];
-
-    if (jsonObject["elements"] != null) for (var element in jsonObject["elements"]) result.elements.add(DocumentReaderAuthenticityElement.fromJson(element));
-
+    if (jsonObject["checks"] != null) for (var item in jsonObject["checks"]) result.checks.add(DocumentReaderAuthenticityCheck.fromJson(item));
     return result;
   }
 }
@@ -823,61 +754,80 @@ class DocumentReaderAuthenticityCheck {
 class DocumentReaderAuthenticityElement {
   int status;
   int elementType;
-  String elementTypeName;
   int elementDiagnose;
+  String elementTypeName;
   String elementDiagnoseName;
 
   static DocumentReaderAuthenticityElement fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityElement();
-
     result.status = jsonObject["status"];
     result.elementType = jsonObject["elementType"];
-    result.elementTypeName = jsonObject["elementTypeName"];
     result.elementDiagnose = jsonObject["elementDiagnose"];
+    result.elementTypeName = jsonObject["elementTypeName"];
     result.elementDiagnoseName = jsonObject["elementDiagnoseName"];
-
     return result;
   }
 }
 
-class PDF417Info {
-  int errorLevel;
-  int columns;
-  int rows;
+class DocumentReaderCompletion {
+  int action;
+  DocumentReaderResults results;
+  Throwable error;
 
-  static fromJson(jsonObject) {
+  static DocumentReaderCompletion fromJson(jsonObject) {
     if (jsonObject == null) return null;
-    var result = new PDF417Info();
-    result.errorLevel = jsonObject["errorLevel"];
-    result.columns = jsonObject["columns"];
-    result.rows = jsonObject["rows"];
+    var result = new DocumentReaderCompletion();
+    result.action = jsonObject["action"];
+    result.results = DocumentReaderResults.fromJson(jsonObject["results"]);
+    result.error = Throwable.fromJson(jsonObject["error"]);
+    return result;
+  }
+}
+
+class Throwable {
+  int code;
+  String domain;
+  String localizedMessage;
+  String message;
+  String string;
+  List<StackTraceElement> stackTrace = [];
+
+  static Throwable fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new Throwable();
+    result.code = jsonObject["code"];
+    result.domain = jsonObject["domain"];
+    result.localizedMessage = jsonObject["localizedMessage"];
+    result.message = jsonObject["message"];
+    result.string = jsonObject["toString"];
+    if (jsonObject["stackTrace"] != null) for (var item in jsonObject["stackTrace"]) result.stackTrace.add(StackTraceElement.fromJson(item));
+    return result;
+  }
+}
+
+class StackTraceElement {
+  int lineNumber;
+  bool isNativeMethod;
+  String className;
+  String fileName;
+  String methodName;
+  String string;
+
+  static StackTraceElement fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new StackTraceElement();
+    result.lineNumber = jsonObject["lineNumber"];
+    result.isNativeMethod = jsonObject["isNativeMethod"];
+    result.className = jsonObject["className"];
+    result.fileName = jsonObject["fileName"];
+    result.methodName = jsonObject["methodName"];
+    result.string = jsonObject["toString"];
     return result;
   }
 }
 
 class DocumentReaderResults {
-  int chipPage;
-  int overallResult;
-  double elapsedTime;
-  double elapsedTimeRFID;
-  int processingFinishedStatus;
-  int morePagesAvailable;
-  int rfidResult;
-  bool highResolution;
-  DocumentReaderGraphicResult graphicResult;
-  DocumentReaderTextResult textResult;
-  ElementPosition documentPosition;
-  ElementPosition barcodePosition;
-  ElementPosition mrzPosition;
-  ImageQualityGroup imageQuality;
-  List<DocumentReaderDocumentType> documentType = [];
-  DocumentReaderJsonResult jsonResult;
-  DocumentReaderNotification documentReaderNotification;
-  RFIDSessionData rfidSessionData;
-  DocumentReaderAuthenticityResult authenticityResult;
-  DocumentReaderBarcodeResult barcodeResult;
-
   String getTextFieldValueByType(int fieldType, {int lcid = 0, int source = -1, bool original = false}) {
     if (this.textResult == null) return null;
     var field = this.findByTypeAndLcid(fieldType, lcid);
@@ -958,40 +908,51 @@ class DocumentReaderResults {
     return null;
   }
 
-  DocumentReaderResults clone() {
-    return DocumentReaderResults.fromJson(json.decode(this.toString()));
-  }
+  int chipPage;
+  int overallResult;
+  int processingFinishedStatus;
+  int elapsedTime;
+  int elapsedTimeRFID;
+  int morePagesAvailable;
+  int rfidResult;
+  bool highResolution;
+  DocumentReaderGraphicResult graphicResult;
+  DocumentReaderTextResult textResult;
+  ElementPosition documentPosition;
+  ElementPosition barcodePosition;
+  ElementPosition mrzPosition;
+  ImageQualityGroup imageQuality;
+  DocumentReaderJsonResult jsonResult;
+  DocumentReaderNotification documentReaderNotification;
+  RFIDSessionData rfidSessionData;
+  DocumentReaderAuthenticityResult authenticityResult;
+  DocumentReaderBarcodeResult barcodeResult;
+  List<DocumentReaderDocumentType> documentTyp = [];
 
   static DocumentReaderResults fromJson(jsonObject) {
     if (jsonObject == null) return null;
-    var results = new DocumentReaderResults();
-    try {
-      results.chipPage = jsonObject["chipPage"];
-      results.overallResult = jsonObject["overallResult"];
-      results.elapsedTime = jsonObject["elapsedTime"] == null ? null : jsonObject["elapsedTime"].toDouble();
-      results.elapsedTimeRFID = jsonObject["elapsedTimeRFID"] == null ? null : jsonObject["elapsedTimeRFID"].toDouble();
-      results.processingFinishedStatus = jsonObject["processingFinishedStatus"];
-      results.morePagesAvailable = jsonObject["morePagesAvailable"];
-      results.rfidResult = jsonObject["rfidResult"];
-      results.highResolution = jsonObject["highResolution"];
-      results.graphicResult = DocumentReaderGraphicResult.fromJson(jsonObject["graphicResult"]);
-      results.textResult = DocumentReaderTextResult.fromJson(jsonObject["textResult"]);
-      results.documentPosition = ElementPosition.fromJson(jsonObject["documentPosition"]);
-      results.barcodePosition = ElementPosition.fromJson(jsonObject["barcodePosition"]);
-      results.mrzPosition = ElementPosition.fromJson(jsonObject["mrzPosition"]);
-      results.imageQuality = ImageQualityGroup.fromJson(jsonObject["imageQuality"]);
-      results.jsonResult = DocumentReaderJsonResult.fromJson(jsonObject["jsonResult"]);
-      results.documentReaderNotification = DocumentReaderNotification.fromJson(jsonObject["documentReaderNotification"]);
-      results.rfidSessionData = RFIDSessionData.fromJson(jsonObject["rfidSessionData"]);
-      results.authenticityResult = DocumentReaderAuthenticityResult.fromJson(jsonObject["authenticityResult"]);
-      results.barcodeResult = DocumentReaderBarcodeResult.fromJson(jsonObject["barcodeResult"]);
-
-      if (jsonObject["documentType"] != null) for (var documentType in jsonObject["documentType"]) results.documentType.add(DocumentReaderDocumentType.fromJson(documentType));
-    } catch (a, b) {
-      print(a);
-      print(b);
-    }
-    return results;
+    var result = new DocumentReaderResults();
+    result.chipPage = jsonObject["chipPage"];
+    result.overallResult = jsonObject["overallResult"];
+    result.processingFinishedStatus = jsonObject["processingFinishedStatus"];
+    result.elapsedTime = jsonObject["elapsedTime"];
+    result.elapsedTimeRFID = jsonObject["elapsedTimeRFID"];
+    result.morePagesAvailable = jsonObject["morePagesAvailable"];
+    result.rfidResult = jsonObject["rfidResult"];
+    result.highResolution = jsonObject["highResolution"];
+    result.graphicResult = DocumentReaderGraphicResult.fromJson(jsonObject["graphicResult"]);
+    result.textResult = DocumentReaderTextResult.fromJson(jsonObject["textResult"]);
+    result.documentPosition = ElementPosition.fromJson(jsonObject["documentPosition"]);
+    result.barcodePosition = ElementPosition.fromJson(jsonObject["barcodePosition"]);
+    result.mrzPosition = ElementPosition.fromJson(jsonObject["mrzPosition"]);
+    result.imageQuality = ImageQualityGroup.fromJson(jsonObject["imageQuality"]);
+    result.jsonResult = DocumentReaderJsonResult.fromJson(jsonObject["jsonResult"]);
+    result.documentReaderNotification = DocumentReaderNotification.fromJson(jsonObject["documentReaderNotification"]);
+    result.rfidSessionData = RFIDSessionData.fromJson(jsonObject["rfidSessionData"]);
+    result.authenticityResult = DocumentReaderAuthenticityResult.fromJson(jsonObject["authenticityResult"]);
+    result.barcodeResult = DocumentReaderBarcodeResult.fromJson(jsonObject["barcodeResult"]);
+    if (jsonObject["documentTyp"] != null) for (var item in jsonObject["documentTyp"]) result.documentTyp.add(DocumentReaderDocumentType.fromJson(item));
+    return result;
   }
 }
 
@@ -5093,7 +5054,7 @@ class UIViewContentMode {
 }
 
 class FlutterDocumentReaderApi {
-  static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api');
+  static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api/method');
 
   static Future<dynamic> getAPIVersion() async {
     return await _channel.invokeMethod("getAPIVersion", []);
@@ -5231,6 +5192,10 @@ class FlutterDocumentReaderApi {
     return await _channel.invokeMethod("readRFID", []);
   }
 
+  static Future<dynamic> getRfidSessionStatus() async {
+    return await _channel.invokeMethod("getRfidSessionStatus", []);
+  }
+
   static Future<dynamic> setEnableCoreLogs(arg0) async {
     return await _channel.invokeMethod("setEnableCoreLogs", [arg0]);
   }
@@ -5281,6 +5246,10 @@ class FlutterDocumentReaderApi {
 
   static Future<dynamic> recognizeImage(arg0) async {
     return await _channel.invokeMethod("recognizeImage", [arg0]);
+  }
+
+  static Future<dynamic> setRfidSessionStatus(arg0) async {
+    return await _channel.invokeMethod("setRfidSessionStatus", [arg0]);
   }
 
   static Future<dynamic> recognizeImageFrame(arg0, arg1) async {

@@ -1,9 +1,19 @@
 package io.flutter.plugins.regula.documentreader.flutter_document_reader_api;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.nfc.NfcAdapter;
+import android.nfc.tech.IsoDep;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
-import android.util.Log;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 
 import com.regula.documentreader.api.completions.IDocumentReaderCompletion;
 import com.regula.documentreader.api.completions.IDocumentReaderInitCompletion;
@@ -22,6 +32,8 @@ import java.util.List;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -29,26 +41,63 @@ import io.flutter.plugin.common.MethodChannel.Result;
 
 import static com.regula.documentreader.api.DocumentReader.Instance;
 
-@SuppressWarnings({"unchecked", "unused", "NullableProblems", "ConstantConditions", "RedundantSuppression"})
+@SuppressWarnings({"unchecked", "NullableProblems", "ConstantConditions", "RedundantSuppression"})
 public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
-    private Context context;
-    private MethodChannel channel;
     private Object args;
+    private boolean backgroundRFIDEnabled = false;
+    private Activity activity;
+    private EventChannel.EventSink eventDatabaseProgress;
+    private EventChannel.EventSink eventCompletion;
     private static int databaseDownloadProgress = 0;
-    private FlutterDocumentReaderApiPlugin newInstance;
-
-    private FlutterDocumentReaderApiPlugin(MethodChannel channel, Context context) {
-        this.channel = channel;
-        this.context = context;
-    }
 
     public FlutterDocumentReaderApiPlugin() {
     }
 
+    Activity getActivity() {
+        return activity;
+    }
+
+    private Context getContext() {
+        return activity;
+    }
+
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
+        new EventChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_document_reader_api/event/completion").setStreamHandler(new EventChannel.StreamHandler() {
+            @Override
+            public void onListen(Object arguments, EventChannel.EventSink events) {
+                eventCompletion = events;
+            }
+
+            @Override
+            public void onCancel(Object arguments) {
+            }
+        });
+        new EventChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_document_reader_api/event/database_progress").setStreamHandler(new EventChannel.StreamHandler() {
+            @Override
+            public void onListen(Object arguments, EventChannel.EventSink events) {
+                eventDatabaseProgress = events;
+            }
+
+            @Override
+            public void onCancel(Object arguments) {
+            }
+        });
+        new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_document_reader_api/method").setMethodCallHandler(this);
+    }
+
     @Override
     public void onAttachedToActivity(ActivityPluginBinding binding) {
-        newInstance.context = binding.getActivity();
-        Log.d("TAG", "AttachedToActivity");
+        activity = binding.getActivity();
+        binding.addOnNewIntentListener(intent -> {
+            if (intent.getAction() != null && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED) && backgroundRFIDEnabled)
+                Instance().readRFID(IsoDep.get(intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)), getCompletion());
+            return false;
+        });
+        ((HiddenLifecycleReference) binding.getLifecycle()).getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+            if (event == Lifecycle.Event.ON_RESUME && backgroundRFIDEnabled)
+                startForegroundDispatch(getActivity());
+        });
     }
 
     @Override
@@ -57,8 +106,6 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     @Override
     public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
-        newInstance.context = binding.getActivity();
-        Log.d("TAG", "ReattachedToActivityForConfigChanges");
     }
 
     @Override
@@ -66,17 +113,32 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     @Override
-    public void onAttachedToEngine(FlutterPluginBinding flutterPluginBinding) {
-        final MethodChannel methodChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_document_reader_api");
-        methodChannel.setMethodCallHandler(newInstance = new FlutterDocumentReaderApiPlugin(methodChannel, flutterPluginBinding.getApplicationContext()));
-    }
-
-    @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
     }
 
-    private Context getContext() {
-        return context;
+    private void startForegroundDispatch(final Activity activity) {
+        IntentFilter[] filters = new IntentFilter[1];
+        filters[0] = new IntentFilter();
+        filters[0].addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
+        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
+        String[][] techList = new String[][]{
+                new String[]{"android.nfc.tech.IsoDep"}
+        };
+        Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+        NfcAdapter.getDefaultAdapter(getActivity()).enableForegroundDispatch(activity, pendingIntent, filters, techList);
+    }
+
+    private void stopForegroundDispatch(final Activity activity) {
+        NfcAdapter.getDefaultAdapter(getActivity()).disableForegroundDispatch(activity);
+    }
+
+    private void stopBackgroundRFID() {
+        if (!backgroundRFIDEnabled)
+            return;
+        stopForegroundDispatch(getActivity());
+        backgroundRFIDEnabled = false;
     }
 
     private interface Callback {
@@ -95,10 +157,6 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
         } catch (JSONException ignored) {
             return ((List<T>) args).get(index);
         }
-    }
-
-    private void sendProgress(int progress) {
-        channel.invokeMethod("updatePercentage", "Downloading database: " + progress + "%");
     }
 
     @Override
@@ -220,6 +278,9 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
                 case "readRFID":
                     readRFID(callback);
                     break;
+                case "getRfidSessionStatus":
+                    getRfidSessionStatus(callback);
+                    break;
                 case "setEnableCoreLogs":
                     setEnableCoreLogs(callback, args(0));
                     break;
@@ -258,6 +319,9 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
                     break;
                 case "recognizeImage":
                     recognizeImage(callback, args(0));
+                    break;
+                case "setRfidSessionStatus":
+                    setRfidSessionStatus(callback, args(0));
                     break;
                 case "recognizeImageFrame":
                     recognizeImageFrame(callback, args(0), args(1));
@@ -395,10 +459,8 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void recognizeImageWithImageInputParams(Callback callback, String base64Image, final JSONObject params) throws JSONException {
-        if (Instance().getDocumentReaderIsReady())
-            Instance().recognizeImage(JSONConstructor.bitmapFromBase64(base64Image), new ImageInputParam(params.getInt("width"), params.getInt("height"), params.getInt("type")), getCompletion(callback));
-        else
-            callback.error("document reader not ready");
+        Instance().recognizeImage(JSONConstructor.bitmapFromBase64(base64Image), new ImageInputParam(params.getInt("width"), params.getInt("height"), params.getInt("type")), getCompletion());
+        callback.success();
     }
 
     private void recognizeImageWithOpts(Callback callback, final JSONObject opts, String base64Image) throws JSONException {
@@ -407,20 +469,18 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void recognizeImage(Callback callback, String base64Image) {
-        if (Instance().getDocumentReaderIsReady())
-            Instance().recognizeImage(JSONConstructor.bitmapFromBase64(base64Image), getCompletion(callback));
-        else
-            callback.error("document reader not ready");
+        stopBackgroundRFID();
+        Instance().recognizeImage(JSONConstructor.bitmapFromBase64(base64Image), getCompletion());
+        callback.success();
     }
 
     private void recognizeImages(Callback callback, JSONArray base64Images) throws JSONException {
-        if (Instance().getDocumentReaderIsReady()) {
-            Bitmap[] images = new Bitmap[base64Images.length()];
-            for (int i = 0; i < images.length; i++)
-                images[i] = JSONConstructor.bitmapFromBase64(base64Images.getString(i));
-            Instance().recognizeImages(images, getCompletion(callback));
-        } else
-            callback.error("document reader not ready");
+        stopBackgroundRFID();
+        Bitmap[] images = new Bitmap[base64Images.length()];
+        for (int i = 0; i < images.length; i++)
+            images[i] = JSONConstructor.bitmapFromBase64(base64Images.getString(i));
+        Instance().recognizeImages(images, getCompletion());
+        callback.success();
     }
 
     private void removeDatabase(Callback callback) {
@@ -457,24 +517,20 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void recognizeImageFrame(Callback callback, String base64Image, final JSONObject opts) throws JSONException {
-        if (Instance().getDocumentReaderIsReady())
-            Instance().recognizeImageFrame(JSONConstructor.bitmapFromBase64(base64Image), new ImageInputParam(opts.getInt("width"), opts.getInt("height"), opts.getInt("type")), getCompletion(callback));
-        else
-            callback.error("document reader not ready");
+        Instance().recognizeImageFrame(JSONConstructor.bitmapFromBase64(base64Image), new ImageInputParam(opts.getInt("width"), opts.getInt("height"), opts.getInt("type")), getCompletion());
+        callback.success();
     }
 
     private void recognizeVideoFrame(Callback callback, String byteString, final JSONObject opts) throws JSONException {
-        if (Instance().getDocumentReaderIsReady())
-            Instance().recognizeVideoFrame(byteString.getBytes(), new ImageInputParam(opts.getInt("width"), opts.getInt("height"), opts.getInt("type")), getCompletion(callback));
-        else
-            callback.error("document reader not ready");
+        stopBackgroundRFID();
+        Instance().recognizeVideoFrame(byteString.getBytes(), new ImageInputParam(opts.getInt("width"), opts.getInt("height"), opts.getInt("type")), getCompletion());
+        callback.success();
     }
 
     private void showScannerWithCameraID(Callback callback, int cameraID) {
-        if (Instance().getDocumentReaderIsReady())
-            Instance().showScanner(getContext(), cameraID, getCompletion(callback));
-        else
-            callback.error("document reader not ready");
+        stopBackgroundRFID();
+        Instance().showScanner(getContext(), cameraID, getCompletion());
+        callback.success();
     }
 
     private void showScanner(Callback callback) {
@@ -482,11 +538,10 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void showScannerWithCameraIDAndOpts(Callback callback, int cameraID, final JSONObject opts) throws JSONException {
-        if (Instance().getDocumentReaderIsReady()) {
-            RegulaConfig.setConfig(Instance(), opts, getContext());
-            Instance().showScanner(getContext(), cameraID, getCompletion(callback));
-        } else
-            callback.error("document reader not ready");
+        stopBackgroundRFID();
+        RegulaConfig.setConfig(Instance(), opts, getContext());
+        Instance().showScanner(getContext(), cameraID, getCompletion());
+        callback.success();
     }
 
     private void stopScanner(Callback callback) {
@@ -495,11 +550,14 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void startRFIDReader(Callback callback) {
-        Instance().startRFIDReader(getContext(), getCompletion(callback));
+        stopBackgroundRFID();
+        Instance().startRFIDReader(getContext(), getCompletion());
+        callback.success();
     }
 
     private void stopRFIDReader(Callback callback) {
         Instance().stopRFIDReader(getContext());
+        stopBackgroundRFID();
         callback.success();
     }
 
@@ -530,34 +588,39 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void readRFID(Callback callback) {
-        callback.error("readRFID() is an ios-only method");
+        backgroundRFIDEnabled = true;
+        startForegroundDispatch(getActivity());
+        callback.success();
     }
 
     private void getCameraSessionIsPaused(Callback callback) {
         callback.error("getCameraSessionIsPaused() is an ios-only method");
     }
 
+    @SuppressWarnings("unused")
     private void recognizeImageWithCameraMode(Callback callback, String base64, boolean mode) {
         callback.error("recognizeImageWithCameraMode() is an ios-only method");
     }
 
+    @SuppressWarnings("unused")
     private void initializeReaderWithDatabasePath(Callback callback, Object license, String path) {
         callback.error("initializeReaderWithDatabasePath() is an ios-only method");
     }
 
-    private IDocumentReaderCompletion getCompletion(Callback callback) {
+    @SuppressWarnings("unused")
+    private void setRfidSessionStatus(Callback callback, String s) {
+        callback.error("setRfidSessionStatus() is an ios-only method");
+    }
+
+    private void getRfidSessionStatus(Callback callback) {
+        callback.error("getRfidSessionStatus() is an ios-only method");
+    }
+
+    private IDocumentReaderCompletion getCompletion() {
         return (action, results, error) -> {
-            switch (action) {
-                case DocReaderAction.COMPLETE:
-                    callback.success(JSONConstructor.resultsToJsonObject(results, getContext()).toString());
-                    break;
-                case DocReaderAction.CANCEL:
-                    callback.error("Canceled by user");
-                    break;
-                case DocReaderAction.ERROR:
-                    callback.error("Error: " + error);
-                    break;
-            }
+            new Handler(Looper.getMainLooper()).post(() -> eventCompletion.success(JSONConstructor.generateCompletion(action, results, error, getContext()).toString()));
+            if (action == DocReaderAction.ERROR || action == DocReaderAction.CANCEL || (action == DocReaderAction.COMPLETE && results.rfidResult == 1))
+                stopBackgroundRFID();
         };
     }
 
@@ -566,7 +629,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             @Override
             public void onPrepareProgressChanged(int progress) {
                 if (progress != databaseDownloadProgress) {
-                    sendProgress(progress);
+                    new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
                     databaseDownloadProgress = progress;
                 }
             }

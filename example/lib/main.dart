@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:async';
-import 'package:flutter/services.dart' show MethodCall, MethodChannel, PlatformException, rootBundle;
+import 'package:flutter/services.dart' show EventChannel, PlatformException, rootBundle;
 import 'package:flutter_document_reader_api_beta/flutter_document_reader_api_beta.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -23,6 +24,11 @@ class _MyAppState extends State<MyApp> {
 
   Object setStatus(String s) => {setState(() => _status = s)};
   String _status = "Loading...";
+  bool isReadingRfid = false;
+  String rfidUIHeader = "Reading RFID";
+  Color rfidUIHeaderColor = Colors.black;
+  String rfidDescription = "Place your phone on top of the NFC tag";
+  double rfidProgress = -1;
   var _portrait = Image.asset('assets/images/portrait.png');
   var _docImage = Image.asset('assets/images/id.png');
   List<List<String>> _scenarios = [];
@@ -35,7 +41,66 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
-    MethodChannel('flutter_document_reader_api').setMethodCallHandler((MethodCall call) => setStatus(call.arguments));
+    EventChannel('flutter_document_reader_api/event/completion').receiveBroadcastStream().listen((jsonString) => this.handleCompletion(DocumentReaderCompletion.fromJson(json.decode(jsonString))));
+    EventChannel('flutter_document_reader_api/event/database_progress').receiveBroadcastStream().listen((progress) => setStatus("Downloading database: " + progress + "%"));
+  }
+
+  void handleCompletion(DocumentReaderCompletion completion) {
+    if (isReadingRfid && (completion.action == DocReaderAction.CANCEL || completion.action == DocReaderAction.ERROR)) this.hideRfidUI();
+    if (isReadingRfid && completion.action == DocReaderAction.NOTIFICATION) this.updateRfidUI(completion.results.documentReaderNotification);
+    if (completion.action == DocReaderAction.COMPLETE) if (isReadingRfid) if (completion.results.rfidResult != 1)
+      this.restartRfidUI();
+    else {
+      this.hideRfidUI();
+      this.displayResults(completion.results);
+    }
+    else
+      this.handleResults(completion.results);
+  }
+
+  void showRfidUI() {
+    // show animation
+    setState(() => isReadingRfid = true);
+  }
+
+  hideRfidUI() {
+    // show animation
+    this.restartRfidUI();
+    FlutterDocumentReaderApi.stopRFIDReader();
+    setState(() {
+      isReadingRfid = false;
+      rfidUIHeader = "Reading RFID";
+      rfidUIHeaderColor = Colors.black;
+    });
+  }
+
+  restartRfidUI() {
+    setState(() {
+      rfidUIHeaderColor = Colors.red;
+      rfidUIHeader = "Failed!";
+      rfidDescription = "Place your phone on top of the NFC tag";
+      rfidProgress = -1;
+    });
+  }
+
+  updateRfidUI(results) {
+    if (results.code == eRFID_NotificationAndErrorCodes.RFID_NOTIFICATION_PCSC_READING_DATAGROUP) setState(() => rfidDescription = eRFID_DataFile_Type.getTranslation(results.number));
+    setState(() {
+      rfidUIHeader = "Reading RFID";
+      rfidUIHeaderColor = Colors.black;
+      rfidProgress = results.value / 100;
+    });
+    if (Platform.isIOS) FlutterDocumentReaderApi.setRfidSessionStatus(rfidDescription + "\n" + results.value.toString() + "%");
+  }
+
+  customRFID() {
+    this.showRfidUI();
+    FlutterDocumentReaderApi.readRFID();
+  }
+
+  usualRFID() {
+    setState(() => _doRfid = false);
+    FlutterDocumentReaderApi.startRFIDReader();
   }
 
   Future<void> initPlatformState() async {
@@ -70,14 +135,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void handleResults(String jString) {
-    var results = DocumentReaderResults.fromJson(json.decode(jString));
+  void handleResults(DocumentReaderResults results) {
     if (_doRfid && results != null && results.chipPage != 0) {
       String accessKey = results.getTextFieldValueByType(eVisualFieldType.FT_MRZ_STRINGS);
       if (accessKey != null && accessKey != "")
         FlutterDocumentReaderApi.setRfidScenario(jsonEncode({"mrz": accessKey.replaceAll('^', '').replaceAll('\n', ''), "pacePasswordType": eRFID_Password_Type.PPT_MRZ}));
       else if (results.getTextFieldValueByType(159) != null && results.getTextFieldValueByType(159) != "") FlutterDocumentReaderApi.setRfidScenario(jsonEncode({"password": results.getTextFieldValueByType(159), "pacePasswordType": eRFID_Password_Type.PPT_CAN}));
-      FlutterDocumentReaderApi.startRFIDReader().then((dynamic S) => this.displayResults(DocumentReaderResults.fromJson(json.decode(S)))).catchError(printError);
+
+      customRFID();
+      // usualRFID();
     } else
       displayResults(results);
   }
@@ -119,20 +185,34 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Center(child: Text(_status))),
-        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-            createImage("Portrait", 150, 150, _portrait.image),
-            createImage("Document image", 150, 200, _docImage.image),
-          ]),
-          Expanded(child: Container(color: Color.fromARGB(5, 10, 10, 10), child: ListView.builder(itemCount: _scenarios.length, itemBuilder: (BuildContext context, int index) => _buildRow(index)))),
-          CheckboxListTile(value: _doRfid, onChanged: onChangeRfid, title: Text("Process rfid reading ${_canRfid ? "" : "(unavailable)"}")),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            createButton("Scan document", () async => this.handleResults(await FlutterDocumentReaderApi.showScanner())),
-            createButton("Scan image", () async => this.handleResults(await FlutterDocumentReaderApi.recognizeImage(await getImage()))),
-          ])
-        ]),
-      ),
+          appBar: AppBar(title: Center(child: Text(_status))),
+          body: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            Visibility(
+                visible: isReadingRfid,
+                child: Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                  Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[]),
+                  Container(child: Text(rfidUIHeader, textScaleFactor: 1.75, style: TextStyle(color: rfidUIHeaderColor)), padding: EdgeInsets.only(bottom: 40)),
+                  Container(child: Text(rfidDescription, textScaleFactor: 1.4), padding: EdgeInsets.only(bottom: 40)),
+                  FractionallySizedBox(widthFactor: 0.6, child: LinearProgressIndicator(value: rfidProgress, minHeight: 10, valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF4285F4)))),
+                  FlatButton(onPressed: () => hideRfidUI(), child: Text("X"), padding: EdgeInsets.only(top: 50)),
+                ]))),
+            Visibility(
+                visible: !isReadingRfid,
+                child: Expanded(
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                  Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+                    createImage("Portrait", 150, 150, _portrait.image),
+                    createImage("Document image", 150, 200, _docImage.image),
+                  ]),
+                  Expanded(child: Container(color: Color.fromARGB(5, 10, 10, 10), child: ListView.builder(itemCount: _scenarios.length, itemBuilder: (BuildContext context, int index) => _buildRow(index)))),
+                  CheckboxListTile(value: _doRfid, onChanged: onChangeRfid, title: Text("Process rfid reading ${_canRfid ? "" : "(unavailable)"}")),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                    createButton("Scan document", () => FlutterDocumentReaderApi.showScanner()),
+                    createButton("Scan image", () async => FlutterDocumentReaderApi.recognizeImage(await getImage())),
+                  ])
+                ]))),
+          ])),
     );
   }
 }
