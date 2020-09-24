@@ -791,7 +791,7 @@ class DocumentReaderBarcodeField {
   int status;
   int pageIndex;
   PDF417Info pdf417Info;
-  Uint8List data;
+  List<dynamic> data;
 
   static DocumentReaderBarcodeField fromJson(jsonObject) {
     if (jsonObject == null) return null;
