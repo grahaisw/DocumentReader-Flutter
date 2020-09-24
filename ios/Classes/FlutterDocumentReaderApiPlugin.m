@@ -43,14 +43,37 @@ typedef void (^Callback)(NSString* response);
     callback(message);
 }
 
-- (void) sendProgress:(NSProgress*)progress {
-    [FlutterDocumentReaderApiPlugin.channel invokeMethod:@"updatePercentage" arguments:[NSString stringWithFormat:@"%@%.1f%@", @"Downloading database: ", progress.fractionCompleted * 100, @"%"]];
+-(void (^_Nullable)(NSProgress * _Nonnull progress))getProgressHandler:(Callback)successCallback :(Callback)errorCallback{
+    return ^(NSProgress * _Nonnull progress) {
+        if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithDouble:progress.fractionCompleted * 100]){
+            databaseProgressEvent([NSString stringWithFormat:@"%li", progress.fractionCompleted * 100]);
+            [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithDouble:progress.fractionCompleted * 100]];
+        }
+    };
+}
+
+-(RGLDocumentReaderCompletion _Nonnull)getCompletion {
+    return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]);
+    };
+}
+
+-(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion {
+    return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error, RGLRFIDErrorCodes errorCode) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]);
+    };
+}
+
+-(RGLRFIDNotificationCallback _Nonnull)getRFIDNotificationCallback {
+    return ^(RGLRFIDNotificationAction notificationAction, RGLRFIDNotify* _Nullable notification) {
+        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]);
+    };
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     [[FlutterEventChannel eventChannelWithName:@"flutter_document_reader_api/event/completion" binaryMessenger:[registrar messenger]] setStreamHandler:[CompletionStreamHandler new]];
     [[FlutterEventChannel eventChannelWithName:@"flutter_document_reader_api/event/database_progress" binaryMessenger:[registrar messenger]] setStreamHandler:[DatabaseProgressStreamHandler new]];
-    
+
     FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"flutter_document_reader_api/method" binaryMessenger:[registrar messenger]];
     [FlutterDocumentReaderApiPlugin setChannel:channel];
     FlutterDocumentReaderApiPlugin* instance = [FlutterDocumentReaderApiPlugin new];
@@ -187,6 +210,7 @@ typedef void (^Callback)(NSString* response);
     else
         [self result:[NSString stringWithFormat:@"%@/%@", @"method not implemented: ", action] :errorCallback];
 }
+
 - (void) resetConfiguration:(Callback)successCallback :(Callback)errorCallback{
     [self result:@"resetConfiguration() is an android-anly method" :errorCallback];
 }
@@ -482,40 +506,12 @@ typedef void (^Callback)(NSString* response);
     };
 }
 
--(void (^_Nullable)(NSProgress * _Nonnull progress))getProgressHandler:(Callback)successCallback :(Callback)errorCallback{
-    return ^(NSProgress * _Nonnull percentage) {
-        NSInteger progress = percentage.fractionCompleted * 100;
-        if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithInteger:progress]){
-            databaseProgressEvent([NSString stringWithFormat:@"%li", (long)progress]);
-            [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithInteger:progress]];
-        }
-    };
-}
-
 -(RGLDocumentReaderPrepareCompletion _Nonnull)getPrepareCompletion:(Callback)successCallback :(Callback)errorCallback{
     return ^(BOOL successful, NSError * _Nullable error) {
         if (successful)
             [self result:@"database prepared" :successCallback];
         else
             [self result:[NSString stringWithFormat:@"%@/%@", @"database preparation failed: ", error.description] :errorCallback];
-    };
-}
-
--(RGLDocumentReaderCompletion _Nonnull)getCompletion {
-    return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error) {
-        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]);
-    };
-}
-
--(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion {
-    return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error, RGLRFIDErrorCodes errorCode) {
-        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]);
-    };
-}
-
--(RGLRFIDNotificationCallback _Nonnull)getRFIDNotificationCallback {
-    return ^(RGLRFIDNotificationAction notificationAction, RGLRFIDNotify* _Nullable notification) {
-        completionEvent([JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]);
     };
 }
 

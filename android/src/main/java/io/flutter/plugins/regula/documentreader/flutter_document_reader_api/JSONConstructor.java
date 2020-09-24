@@ -686,21 +686,21 @@ class JSONConstructor {
         try {
             result.put("action", action);
             switch (action) {
-                case DocReaderAction.NOTIFICATION:
-                case DocReaderAction.CANCEL:
-                case DocReaderAction.ERROR:
                 case DocReaderAction.MORE_PAGES_AVAILABLE:
                 case DocReaderAction.PROCESS:
                 case DocReaderAction.PROCESS_WHITE_UV_IMAGES:
+                    result.put("results", "");
+                case DocReaderAction.NOTIFICATION:
                     result.put("results", resultsToJsonObjectNotification(results));
                     break;
                 case DocReaderAction.COMPLETE:
+                case DocReaderAction.CANCEL:
+                case DocReaderAction.ERROR:
                     result.put("results", resultsToJsonObject(results, context));
                     break;
             }
             result.put("error", generateThrowable(error, context));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException ignored) {
         }
 
         return result;
@@ -712,7 +712,7 @@ class JSONConstructor {
             return result;
         result.put("localizedMessage", throwable.getLocalizedMessage());
         result.put("message", throwable.getMessage());
-        result.put("toString", throwable.toString());
+        result.put("string", throwable.toString());
         result.put("stackTrace", generateArray(throwable.getStackTrace(), JSONConstructor::generateStackTraceElement, context));
 
         return result;
@@ -727,7 +727,7 @@ class JSONConstructor {
         result.put("lineNumber", e.getLineNumber());
         result.put("methodName", e.getMethodName());
         result.put("isNativeMethod", e.isNativeMethod());
-        result.put("toString", e.toString());
+        result.put("string", e.toString());
 
         return result;
     }

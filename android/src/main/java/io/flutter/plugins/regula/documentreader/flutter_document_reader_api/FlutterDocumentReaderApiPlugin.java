@@ -21,6 +21,7 @@ import com.regula.documentreader.api.completions.IDocumentReaderPrepareCompletio
 import com.regula.documentreader.api.enums.DocReaderAction;
 import com.regula.documentreader.api.params.ImageInputParam;
 import com.regula.documentreader.api.params.rfid.PKDCertificate;
+import com.regula.documentreader.api.results.DocumentReaderResults;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,31 +117,6 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
     }
 
-    private void startForegroundDispatch(final Activity activity) {
-        IntentFilter[] filters = new IntentFilter[1];
-        filters[0] = new IntentFilter();
-        filters[0].addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
-        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
-        String[][] techList = new String[][]{
-                new String[]{"android.nfc.tech.IsoDep"}
-        };
-        Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
-        NfcAdapter.getDefaultAdapter(getActivity()).enableForegroundDispatch(activity, pendingIntent, filters, techList);
-    }
-
-    private void stopForegroundDispatch(final Activity activity) {
-        NfcAdapter.getDefaultAdapter(getActivity()).disableForegroundDispatch(activity);
-    }
-
-    private void stopBackgroundRFID() {
-        if (!backgroundRFIDEnabled)
-            return;
-        stopForegroundDispatch(getActivity());
-        backgroundRFIDEnabled = false;
-    }
-
     private interface Callback {
         void success(Object o);
 
@@ -157,6 +133,14 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
         } catch (JSONException ignored) {
             return ((List<T>) args).get(index);
         }
+    }
+
+    private void sendCompletion(int action, DocumentReaderResults results, Throwable error) {
+        new Handler(Looper.getMainLooper()).post(() -> eventCompletion.success(JSONConstructor.generateCompletion(action, results, error, getContext()).toString()));
+    }
+
+    private void sendProgress(int progress) {
+        new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
     }
 
     @Override
@@ -344,6 +328,31 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             }
         } catch (Exception ignored) {
         }
+    }
+
+    private void startForegroundDispatch(final Activity activity) {
+        IntentFilter[] filters = new IntentFilter[1];
+        filters[0] = new IntentFilter();
+        filters[0].addAction(NfcAdapter.ACTION_TECH_DISCOVERED);
+        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
+        String[][] techList = new String[][]{
+                new String[]{"android.nfc.tech.IsoDep"}
+        };
+        Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+        NfcAdapter.getDefaultAdapter(getActivity()).enableForegroundDispatch(activity, pendingIntent, filters, techList);
+    }
+
+    private void stopForegroundDispatch(final Activity activity) {
+        NfcAdapter.getDefaultAdapter(getActivity()).disableForegroundDispatch(activity);
+    }
+
+    private void stopBackgroundRFID() {
+        if (!backgroundRFIDEnabled)
+            return;
+        stopForegroundDispatch(getActivity());
+        backgroundRFIDEnabled = false;
     }
 
     private void getAvailableScenarios(Callback callback) throws JSONException {
@@ -583,14 +592,14 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
         callback.success();
     }
 
-    private void setCameraSessionIsPaused(Callback callback, @SuppressWarnings("unused") boolean ignored) {
-        callback.error("setCameraSessionIsPaused() is an ios-only method");
-    }
-
     private void readRFID(Callback callback) {
         backgroundRFIDEnabled = true;
         startForegroundDispatch(getActivity());
         callback.success();
+    }
+
+    private void setCameraSessionIsPaused(Callback callback, @SuppressWarnings("unused") boolean ignored) {
+        callback.error("setCameraSessionIsPaused() is an ios-only method");
     }
 
     private void getCameraSessionIsPaused(Callback callback) {
@@ -618,7 +627,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private IDocumentReaderCompletion getCompletion() {
         return (action, results, error) -> {
-            new Handler(Looper.getMainLooper()).post(() -> eventCompletion.success(JSONConstructor.generateCompletion(action, results, error, getContext()).toString()));
+            sendCompletion(action, results, error);
             if (action == DocReaderAction.ERROR || action == DocReaderAction.CANCEL || (action == DocReaderAction.COMPLETE && results.rfidResult == 1))
                 stopBackgroundRFID();
         };
@@ -629,7 +638,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             @Override
             public void onPrepareProgressChanged(int progress) {
                 if (progress != databaseDownloadProgress) {
-                    new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
+                    sendProgress(progress);
                     databaseDownloadProgress = progress;
                 }
             }
