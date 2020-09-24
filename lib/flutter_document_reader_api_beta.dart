@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'dart:typed_data';
 
 // Classes
 
@@ -5054,7 +5053,7 @@ class UIViewContentMode {
 }
 
 class FlutterDocumentReaderApi {
-  static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api');
+  static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api/method');
 
   static Future<dynamic> getAPIVersion() async {
     return await _channel.invokeMethod("getAPIVersion", []);
