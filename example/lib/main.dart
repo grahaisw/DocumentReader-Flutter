@@ -180,6 +180,16 @@ class _MyAppState extends State<MyApp> {
                     .replaceAll('\n', ''))
             .data
             .contentAsBytes());
+
+      for (var textField in results.textResult.fields) {
+        for (var value in textField.values) {
+          print(textField.fieldName +
+              ', value: ' +
+              value.value +
+              ', source: ' +
+              value.sourceType.toString());
+        }
+      }
     });
   }
 

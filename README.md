@@ -5,7 +5,7 @@ You can use native camera to scan the documents or image from gallery for extrac
 
 This repository contains the source code of the Document Reader API, and the sample application that demonstrates the _**API**_ calls you can use to interact with the Document Reader library.
 
-# Content
+# Contents
 * [How to build demo application](#how-to-build-demo-application)
     * [Troubleshooting license issues](#troubleshooting-license-issues)
 * [Documentation](#documentation)
@@ -18,16 +18,13 @@ This repository contains the source code of the Document Reader API, and the sam
 4. Run the following commands in Terminal:
 ```bash
 $ cd example
+# Install packages
 $ flutter pub get
-$ cd ios
-$ pod install
+# Check that supported devices are running
+$ flutter devices
+# Run the app
+$ flutter run
 ```
-
-5. Android:
-  * Run the Android project directly from within Android Studio.
-
-6. iOS:
-  * Run the Xcode project directly from within Xcode.
 
 ### Troubleshooting license issues
 If you have issues with license verification when running the application, please verify that next is true:

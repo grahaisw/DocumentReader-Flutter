@@ -29,10 +29,20 @@ class Scenario {
     result.faceExt = jsonObject["faceExt"];
     result.multiPageOff = jsonObject["multiPageOff"];
     result.seriesProcessMode = jsonObject["seriesProcessMode"];
-    result.frameKWHLandscape = jsonObject["frameKWHLandscape"] == null ? null : jsonObject["frameKWHLandscape"].toDouble();
-    result.frameKWHPortrait = jsonObject["frameKWHPortrait"] == null ? null : jsonObject["frameKWHPortrait"].toDouble();
-    result.frameKWHDoublePageSpreadPortrait = jsonObject["frameKWHDoublePageSpreadPortrait"] == null ? null : jsonObject["frameKWHDoublePageSpreadPortrait"].toDouble();
-    result.frameKWHDoublePageSpreadLandscape = jsonObject["frameKWHDoublePageSpreadLandscape"] == null ? null : jsonObject["frameKWHDoublePageSpreadLandscape"].toDouble();
+    result.frameKWHLandscape = jsonObject["frameKWHLandscape"] == null
+        ? null
+        : jsonObject["frameKWHLandscape"].toDouble();
+    result.frameKWHPortrait = jsonObject["frameKWHPortrait"] == null
+        ? null
+        : jsonObject["frameKWHPortrait"].toDouble();
+    result.frameKWHDoublePageSpreadPortrait =
+        jsonObject["frameKWHDoublePageSpreadPortrait"] == null
+            ? null
+            : jsonObject["frameKWHDoublePageSpreadPortrait"].toDouble();
+    result.frameKWHDoublePageSpreadLandscape =
+        jsonObject["frameKWHDoublePageSpreadLandscape"] == null
+            ? null
+            : jsonObject["frameKWHDoublePageSpreadLandscape"].toDouble();
     result.name = jsonObject["name"];
     result.caption = jsonObject["caption"];
     result.description = jsonObject["description"];
@@ -88,7 +98,9 @@ class DocumentReaderGraphicResult {
   static DocumentReaderGraphicResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderGraphicResult();
-    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderGraphicField.fromJson(item));
+    if (jsonObject["fields"] != null)
+      for (var item in jsonObject["fields"])
+        result.fields.add(DocumentReaderGraphicField.fromJson(item));
     return result;
   }
 }
@@ -113,7 +125,9 @@ class DocumentReaderValue {
     result.value = jsonObject["value"];
     result.originalValue = jsonObject["originalValue"];
     result.boundRect = Rect.fromJson(jsonObject["boundRect"]);
-    if (jsonObject["comparison"] != null) jsonObject["comparison"].forEach((k, v) => result.comparison[int.parse(k)] = v);
+    if (jsonObject["comparison"] != null)
+      jsonObject["comparison"]
+          .forEach((k, v) => result.comparison[int.parse(k)] = v);
     return result;
   }
 }
@@ -136,7 +150,9 @@ class DocumentReaderTextField {
     result.lcidName = jsonObject["lcidName"];
     result.fieldName = jsonObject["fieldName"];
     result.value = DocumentReaderValue.fromJson(jsonObject["value"]);
-    if (jsonObject["values"] != null) for (var item in jsonObject["values"]) result.values.add(DocumentReaderValue.fromJson(item));
+    if (jsonObject["values"] != null)
+      for (var item in jsonObject["values"])
+        result.values.add(DocumentReaderValue.fromJson(item));
     return result;
   }
 }
@@ -149,7 +165,9 @@ class DocumentReaderTextResult {
     if (jsonObject == null) return null;
     var result = new DocumentReaderTextResult();
     result.status = jsonObject["status"];
-    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderTextField.fromJson(item));
+    if (jsonObject["fields"] != null)
+      for (var item in jsonObject["fields"])
+        result.fields.add(DocumentReaderTextField.fromJson(item));
     return result;
   }
 }
@@ -198,7 +216,8 @@ class ElementPosition {
     result.objArea = jsonObject["objArea"];
     result.objIntAngleDev = jsonObject["objIntAngleDev"];
     result.resultStatus = jsonObject["resultStatus"];
-    result.angle = jsonObject["angle"] == null ? null : jsonObject["angle"].toDouble();
+    result.angle =
+        jsonObject["angle"] == null ? null : jsonObject["angle"].toDouble();
     result.center = Coordinate.fromJson(jsonObject["center"]);
     result.leftTop = Coordinate.fromJson(jsonObject["leftTop"]);
     result.leftBottom = Coordinate.fromJson(jsonObject["leftBottom"]);
@@ -233,7 +252,9 @@ class ImageQualityGroup {
     var result = new ImageQualityGroup();
     result.count = jsonObject["count"];
     result.result = jsonObject["result"];
-    if (jsonObject["imageQualityList"] != null) for (var item in jsonObject["imageQualityList"]) result.imageQualityList.add(ImageQuality.fromJson(item));
+    if (jsonObject["imageQualityList"] != null)
+      for (var item in jsonObject["imageQualityList"])
+        result.imageQualityList.add(ImageQuality.fromJson(item));
     return result;
   }
 }
@@ -264,7 +285,8 @@ class DocumentReaderDocumentType {
     result.dDescription = jsonObject["dDescription"];
     result.dYear = jsonObject["dYear"];
     result.dCountryName = jsonObject["dCountryName"];
-    if (jsonObject["FDSID"] != null) for (var item in jsonObject["FDSID"]) result.FDSID.add(item);
+    if (jsonObject["FDSID"] != null)
+      for (var item in jsonObject["FDSID"]) result.FDSID.add(item);
     return result;
   }
 }
@@ -292,7 +314,9 @@ class DocumentReaderJsonResult {
   static DocumentReaderJsonResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderJsonResult();
-    if (jsonObject["results"] != null) for (var item in jsonObject["results"]) result.results.add(DocumentReaderJsonResultGroup.fromJson(item));
+    if (jsonObject["results"] != null)
+      for (var item in jsonObject["results"])
+        result.results.add(DocumentReaderJsonResultGroup.fromJson(item));
     return result;
   }
 }
@@ -324,7 +348,9 @@ class AccessControlProcedureType {
     result.activeOptionIdx = jsonObject["activeOptionIdx"];
     result.type = jsonObject["type"];
     result.status = jsonObject["status"];
-    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
     return result;
   }
 }
@@ -365,7 +391,8 @@ class SecurityObjectCertificates {
   static SecurityObjectCertificates fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SecurityObjectCertificates();
-    result.securityObject = CertificateData.fromJson(jsonObject["securityObject"]);
+    result.securityObject =
+        CertificateData.fromJson(jsonObject["securityObject"]);
     return result;
   }
 }
@@ -392,11 +419,20 @@ class File {
     result.readingStatus = jsonObject["readingStatus"];
     result.fileID = jsonObject["fileID"];
     result.fileData = FileData.fromJson(jsonObject["fileData"]);
-    result.certificates = SecurityObjectCertificates.fromJson(jsonObject["certificates"]);
-    if (jsonObject["docFieldsText"] != null) for (var item in jsonObject["docFieldsText"]) result.docFieldsText.add(item);
-    if (jsonObject["docFieldsGraphics"] != null) for (var item in jsonObject["docFieldsGraphics"]) result.docFieldsGraphics.add(item);
-    if (jsonObject["docFieldsOriginals"] != null) for (var item in jsonObject["docFieldsOriginals"]) result.docFieldsOriginals.add(item);
-    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
+    result.certificates =
+        SecurityObjectCertificates.fromJson(jsonObject["certificates"]);
+    if (jsonObject["docFieldsText"] != null)
+      for (var item in jsonObject["docFieldsText"])
+        result.docFieldsText.add(item);
+    if (jsonObject["docFieldsGraphics"] != null)
+      for (var item in jsonObject["docFieldsGraphics"])
+        result.docFieldsGraphics.add(item);
+    if (jsonObject["docFieldsOriginals"] != null)
+      for (var item in jsonObject["docFieldsOriginals"])
+        result.docFieldsOriginals.add(item);
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
     return result;
   }
 }
@@ -419,7 +455,9 @@ class Application {
     result.dataHashAlgorithm = jsonObject["dataHashAlgorithm"];
     result.unicodeVersion = jsonObject["unicodeVersion"];
     result.version = jsonObject["version"];
-    if (jsonObject["files"] != null) for (var item in jsonObject["files"]) result.files.add(File.fromJson(item));
+    if (jsonObject["files"] != null)
+      for (var item in jsonObject["files"])
+        result.files.add(File.fromJson(item));
     return result;
   }
 }
@@ -466,7 +504,9 @@ class Authority {
     var result = new Authority();
     result.data = jsonObject["data"];
     result.friendlyName = Value.fromJson(jsonObject["friendlyName"]);
-    if (jsonObject["attributes"] != null) for (var item in jsonObject["attributes"]) result.attributes.add(Attribute.fromJson(item));
+    if (jsonObject["attributes"] != null)
+      for (var item in jsonObject["attributes"])
+        result.attributes.add(Attribute.fromJson(item));
     return result;
   }
 }
@@ -526,8 +566,12 @@ class CertificateChain {
     result.validity = Validity.fromJson(jsonObject["validity"]);
     result.issuer = Authority.fromJson(jsonObject["issuer"]);
     result.subject = Authority.fromJson(jsonObject["subject"]);
-    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
-    if (jsonObject["extensions"] != null) for (var item in jsonObject["extensions"]) result.extensions.add(Extension.fromJson(item));
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
+    if (jsonObject["extensions"] != null)
+      for (var item in jsonObject["extensions"])
+        result.extensions.add(Extension.fromJson(item));
     return result;
   }
 }
@@ -556,11 +600,18 @@ class SignerInfo {
     result.signatureAlgorithm = jsonObject["signatureAlgorithm"];
     result.serialNumber = Value.fromJson(jsonObject["serialNumber"]);
     result.signature = Value.fromJson(jsonObject["signature"]);
-    result.subjectKeyIdentifier = Value.fromJson(jsonObject["subjectKeyIdentifier"]);
+    result.subjectKeyIdentifier =
+        Value.fromJson(jsonObject["subjectKeyIdentifier"]);
     result.issuer = Authority.fromJson(jsonObject["issuer"]);
-    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
-    if (jsonObject["signedAttributes"] != null) for (var item in jsonObject["signedAttributes"]) result.signedAttributes.add(Extension.fromJson(item));
-    if (jsonObject["certificateChain"] != null) for (var item in jsonObject["certificateChain"]) result.certificateChain.add(CertificateChain.fromJson(item));
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
+    if (jsonObject["signedAttributes"] != null)
+      for (var item in jsonObject["signedAttributes"])
+        result.signedAttributes.add(Extension.fromJson(item));
+    if (jsonObject["certificateChain"] != null)
+      for (var item in jsonObject["certificateChain"])
+        result.certificateChain.add(CertificateChain.fromJson(item));
     return result;
   }
 }
@@ -578,8 +629,12 @@ class SecurityObject {
     result.fileReference = jsonObject["fileReference"];
     result.version = jsonObject["version"];
     result.objectType = jsonObject["objectType"];
-    if (jsonObject["notifications"] != null) for (var item in jsonObject["notifications"]) result.notifications.add(item);
-    if (jsonObject["signerInfos"] != null) for (var item in jsonObject["signerInfos"]) result.signerInfos.add(SignerInfo.fromJson(item));
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
+    if (jsonObject["signerInfos"] != null)
+      for (var item in jsonObject["signerInfos"])
+        result.signerInfos.add(SignerInfo.fromJson(item));
     return result;
   }
 }
@@ -641,11 +696,19 @@ class RFIDSessionData {
     result.status = jsonObject["status"];
     result.extLeSupport = jsonObject["extLeSupport"];
     result.processTime = jsonObject["processTime"];
-    result.cardProperties = CardProperties.fromJson(jsonObject["cardProperties"]);
-    result.sessionDataStatus = RFIDSessionDataStatus.fromJson(jsonObject["sessionDataStatus"]);
-    if (jsonObject["accessControls"] != null) for (var item in jsonObject["accessControls"]) result.accessControls.add(AccessControlProcedureType.fromJson(item));
-    if (jsonObject["applications"] != null) for (var item in jsonObject["applications"]) result.applications.add(Application.fromJson(item));
-    if (jsonObject["securityObjects"] != null) for (var item in jsonObject["securityObjects"]) result.securityObjects.add(SecurityObject.fromJson(item));
+    result.cardProperties =
+        CardProperties.fromJson(jsonObject["cardProperties"]);
+    result.sessionDataStatus =
+        RFIDSessionDataStatus.fromJson(jsonObject["sessionDataStatus"]);
+    if (jsonObject["accessControls"] != null)
+      for (var item in jsonObject["accessControls"])
+        result.accessControls.add(AccessControlProcedureType.fromJson(item));
+    if (jsonObject["applications"] != null)
+      for (var item in jsonObject["applications"])
+        result.applications.add(Application.fromJson(item));
+    if (jsonObject["securityObjects"] != null)
+      for (var item in jsonObject["securityObjects"])
+        result.securityObjects.add(SecurityObject.fromJson(item));
     return result;
   }
 }
@@ -664,7 +727,9 @@ class DocumentReaderAuthenticityCheck {
     result.status = jsonObject["status"];
     result.typeName = jsonObject["typeName"];
     result.pageIndex = jsonObject["pageIndex"];
-    if (jsonObject["elements"] != null) for (var item in jsonObject["elements"]) result.elements.add(DocumentReaderAuthenticityElement.fromJson(item));
+    if (jsonObject["elements"] != null)
+      for (var item in jsonObject["elements"])
+        result.elements.add(DocumentReaderAuthenticityElement.fromJson(item));
     return result;
   }
 }
@@ -713,7 +778,9 @@ class DocumentReaderBarcodeResult {
   static DocumentReaderBarcodeResult fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderBarcodeResult();
-    if (jsonObject["fields"] != null) for (var item in jsonObject["fields"]) result.fields.add(DocumentReaderBarcodeField.fromJson(item));
+    if (jsonObject["fields"] != null)
+      for (var item in jsonObject["fields"])
+        result.fields.add(DocumentReaderBarcodeField.fromJson(item));
     return result;
   }
 }
@@ -745,7 +812,9 @@ class DocumentReaderAuthenticityResult {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityResult();
     result.status = jsonObject["status"];
-    if (jsonObject["checks"] != null) for (var item in jsonObject["checks"]) result.checks.add(DocumentReaderAuthenticityCheck.fromJson(item));
+    if (jsonObject["checks"] != null)
+      for (var item in jsonObject["checks"])
+        result.checks.add(DocumentReaderAuthenticityCheck.fromJson(item));
     return result;
   }
 }
@@ -800,7 +869,9 @@ class Throwable {
     result.localizedMessage = jsonObject["localizedMessage"];
     result.message = jsonObject["message"];
     result.string = jsonObject["string"];
-    if (jsonObject["stackTrace"] != null) for (var item in jsonObject["stackTrace"]) result.stackTrace.add(StackTraceElement.fromJson(item));
+    if (jsonObject["stackTrace"] != null)
+      for (var item in jsonObject["stackTrace"])
+        result.stackTrace.add(StackTraceElement.fromJson(item));
     return result;
   }
 }
@@ -827,7 +898,8 @@ class StackTraceElement {
 }
 
 class DocumentReaderResults {
-  String getTextFieldValueByType(int fieldType, {int lcid = 0, int source = -1, bool original = false}) {
+  String getTextFieldValueByType(int fieldType,
+      {int lcid = 0, int source = -1, bool original = false}) {
     if (this.textResult == null) return null;
     var field = this.findByTypeAndLcid(fieldType, lcid);
     if (field == null) return null;
@@ -836,8 +908,10 @@ class DocumentReaderResults {
     return original ? value.originalValue : value.value;
   }
 
-  String getTextFieldValueByTypeAndSource(int fieldType, int source, {bool original = false}) {
-    return this.getTextFieldValueByType(fieldType, lcid: 0, source: source, original: original);
+  String getTextFieldValueByTypeAndSource(int fieldType, int source,
+      {bool original = false}) {
+    return this.getTextFieldValueByType(fieldType,
+        lcid: 0, source: source, original: original);
   }
 
   int getTextFieldStatusByType(int fieldType, {int lcid = 0}) {
@@ -846,14 +920,22 @@ class DocumentReaderResults {
     return field != null ? field.status : 0;
   }
 
-  String getGraphicFieldImageByType(int fieldType, {int source = -1, int pageIndex = -1, int light = -1}) {
+  String getGraphicFieldImageByType(int fieldType,
+      {int source = -1, int pageIndex = -1, int light = -1}) {
     if (this.graphicResult == null) return null;
     List<DocumentReaderGraphicField> foundFields = [];
 
-    for (var field in this.graphicResult.fields) if (field.fieldType == fieldType) foundFields.add(field);
-    if (source != -1) for (int i = 0; i < foundFields.length; i++) if (foundFields[i].sourceType != source) foundFields.sublist(i, 1);
-    if (light != -1) for (int i = 0; i < foundFields.length; i++) if (foundFields[i].lightType != light) foundFields.sublist(i, 1);
-    if (pageIndex != -1) for (int i = 0; i < foundFields.length; i++) if (foundFields[i].pageIndex != pageIndex) foundFields.sublist(i, 1);
+    for (var field in this.graphicResult.fields)
+      if (field.fieldType == fieldType) foundFields.add(field);
+    if (source != -1)
+      for (int i = 0; i < foundFields.length; i++)
+        if (foundFields[i].sourceType != source) foundFields.sublist(i, 1);
+    if (light != -1)
+      for (int i = 0; i < foundFields.length; i++)
+        if (foundFields[i].lightType != light) foundFields.sublist(i, 1);
+    if (pageIndex != -1)
+      for (int i = 0; i < foundFields.length; i++)
+        if (foundFields[i].pageIndex != pageIndex) foundFields.sublist(i, 1);
 
     return foundFields.length > 0 ? foundFields[0].value : null;
   }
@@ -880,7 +962,8 @@ class DocumentReaderResults {
 
   DocumentReaderTextField findByTypeAndLcid(int type, int lcid) {
     List<DocumentReaderTextField> foundFields = [];
-    for (DocumentReaderTextField field in this.textResult.fields) if (field.fieldType == type) foundFields.add(field);
+    for (DocumentReaderTextField field in this.textResult.fields)
+      if (field.fieldType == type) foundFields.add(field);
     if (foundFields.length <= 0) return null;
     DocumentReaderTextField foundField;
 
@@ -893,7 +976,8 @@ class DocumentReaderResults {
     return foundField;
   }
 
-  DocumentReaderValue findBySource(DocumentReaderTextField field, int sourceType) {
+  DocumentReaderValue findBySource(
+      DocumentReaderTextField field, int sourceType) {
     DocumentReaderValue value;
     if (sourceType == -1) {
       DocumentReaderValue mrzVal = this.findBySource(field, 3);
@@ -903,7 +987,8 @@ class DocumentReaderResults {
       var visualVal = this.findBySource(field, 17);
       return visualVal != null ? visualVal : null;
     } else
-      for (DocumentReaderValue item in field.values) if (item.sourceType == sourceType) return item;
+      for (DocumentReaderValue item in field.values)
+        if (item.sourceType == sourceType) return item;
     return null;
   }
 
@@ -926,7 +1011,7 @@ class DocumentReaderResults {
   RFIDSessionData rfidSessionData;
   DocumentReaderAuthenticityResult authenticityResult;
   DocumentReaderBarcodeResult barcodeResult;
-  List<DocumentReaderDocumentType> documentTyp = [];
+  List<DocumentReaderDocumentType> documentType = [];
 
   static DocumentReaderResults fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -939,18 +1024,30 @@ class DocumentReaderResults {
     result.morePagesAvailable = jsonObject["morePagesAvailable"];
     result.rfidResult = jsonObject["rfidResult"];
     result.highResolution = jsonObject["highResolution"];
-    result.graphicResult = DocumentReaderGraphicResult.fromJson(jsonObject["graphicResult"]);
-    result.textResult = DocumentReaderTextResult.fromJson(jsonObject["textResult"]);
-    result.documentPosition = ElementPosition.fromJson(jsonObject["documentPosition"]);
-    result.barcodePosition = ElementPosition.fromJson(jsonObject["barcodePosition"]);
+    result.graphicResult =
+        DocumentReaderGraphicResult.fromJson(jsonObject["graphicResult"]);
+    result.textResult =
+        DocumentReaderTextResult.fromJson(jsonObject["textResult"]);
+    result.documentPosition =
+        ElementPosition.fromJson(jsonObject["documentPosition"]);
+    result.barcodePosition =
+        ElementPosition.fromJson(jsonObject["barcodePosition"]);
     result.mrzPosition = ElementPosition.fromJson(jsonObject["mrzPosition"]);
-    result.imageQuality = ImageQualityGroup.fromJson(jsonObject["imageQuality"]);
-    result.jsonResult = DocumentReaderJsonResult.fromJson(jsonObject["jsonResult"]);
-    result.documentReaderNotification = DocumentReaderNotification.fromJson(jsonObject["documentReaderNotification"]);
-    result.rfidSessionData = RFIDSessionData.fromJson(jsonObject["rfidSessionData"]);
-    result.authenticityResult = DocumentReaderAuthenticityResult.fromJson(jsonObject["authenticityResult"]);
-    result.barcodeResult = DocumentReaderBarcodeResult.fromJson(jsonObject["barcodeResult"]);
-    if (jsonObject["documentTyp"] != null) for (var item in jsonObject["documentTyp"]) result.documentTyp.add(DocumentReaderDocumentType.fromJson(item));
+    result.imageQuality =
+        ImageQualityGroup.fromJson(jsonObject["imageQuality"]);
+    result.jsonResult =
+        DocumentReaderJsonResult.fromJson(jsonObject["jsonResult"]);
+    result.documentReaderNotification = DocumentReaderNotification.fromJson(
+        jsonObject["documentReaderNotification"]);
+    result.rfidSessionData =
+        RFIDSessionData.fromJson(jsonObject["rfidSessionData"]);
+    result.authenticityResult = DocumentReaderAuthenticityResult.fromJson(
+        jsonObject["authenticityResult"]);
+    result.barcodeResult =
+        DocumentReaderBarcodeResult.fromJson(jsonObject["barcodeResult"]);
+    if (jsonObject["documentType"] != null)
+      for (var item in jsonObject["documentType"])
+        result.documentType.add(DocumentReaderDocumentType.fromJson(item));
     return result;
   }
 }
@@ -1834,44 +1931,57 @@ class eRFID_NotificationAndErrorCodes {
   static const int RFID_LAYER6_PWD_FAILED = -2146409536;
   static const int RFID_ERROR_NOT_PERFORMED = -2097152000;
   static const int RFID_ERROR_SESSION_IS_CLOSED = -2097151999;
-  static const int RFID_ERROR_SESSION_TERMINAL_UNSUPPORTED_OPERATION = -2097151998;
+  static const int RFID_ERROR_SESSION_TERMINAL_UNSUPPORTED_OPERATION =
+      -2097151998;
   static const int RFID_ERROR_SESSION_TERMINAL_TYPE_UNKNOWN = -2097151984;
-  static const int RFID_ERROR_SESSION_TERMINAL_TYPE_BAD_CERTIFICATE = -2097151983;
+  static const int RFID_ERROR_SESSION_TERMINAL_TYPE_BAD_CERTIFICATE =
+      -2097151983;
   static const int RFID_ERROR_SESSION_TERMINAL_TYPE_NOT_SET = -2097151982;
   static const int RFID_ERROR_SESSION_PROCEDURE_TYPE_UNKNOWN = -2097151981;
   static const int RFID_ERROR_SESSION_PROCEDURE_TYPE_UNSUPPORTED = -2097151980;
   static const int RFID_ERROR_SESSION_PROCEDURE_TYPE_NOT_SET = -2097151979;
   static const int RFID_ERROR_SESSION_ACCESS_KEY_UNKNOWN_TYPE = -2097151978;
-  static const int RFID_ERROR_SESSION_ACCESS_KEY_UNSUPPORTED_SM_TYPE = -2097151977;
-  static const int RFID_ERROR_SESSION_ACCESS_KEY_INCORRECT_SM_TYPE = -2097151976;
+  static const int RFID_ERROR_SESSION_ACCESS_KEY_UNSUPPORTED_SM_TYPE =
+      -2097151977;
+  static const int RFID_ERROR_SESSION_ACCESS_KEY_INCORRECT_SM_TYPE =
+      -2097151976;
   static const int RFID_ERROR_SESSION_ACCESS_KEY_RESTRICTED = -2097151975;
   static const int RFID_ERROR_SESSION_ACCESS_KEY_INCORRECT_DATA = -2097151974;
   static const int RFID_ERROR_SESSION_ACCESS_KEY_NOT_SET = -2097151973;
-  static const int RFID_ERROR_SESSION_PWD_MANAGEMENT_NOT_AUTHORIZED = -2097151972;
+  static const int RFID_ERROR_SESSION_PWD_MANAGEMENT_NOT_AUTHORIZED =
+      -2097151972;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_UNKNOWN_TYPE = -2097151968;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_SM = -2097151967;
-  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_PACE = -2097151966;
-  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_CA_KEYS = -2097151965;
+  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_PACE =
+      -2097151966;
+  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_CA_KEYS =
+      -2097151965;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_TA = -2097151964;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_REQUIRES_CA = -2097151963;
-  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_INCORRECT_OPTION_CA = -2097151962;
+  static const int RFID_ERROR_SESSION_ACCESS_CONTROL_INCORRECT_OPTION_CA =
+      -2097151962;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_CA_FAILED = -2097151961;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_TA_FAILED = -2097151960;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_AA_FAILED = -2097151959;
   static const int RFID_ERROR_SESSION_ACCESS_CONTROL_RI_FAILED = -2097151958;
   static const int RFID_ERROR_SESSION_PA_SIGNATURE_CHECK_FAILED = -2097151952;
   static const int RFID_ERROR_SESSION_PA_HASH_CHECK_FAILED = -2097151951;
-  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_DATE_OF_EXPIRY = -2097151936;
-  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_DATE_OF_BIRTH = -2097151935;
-  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_COMMUNITY_ID = -2097151934;
-  static const int RFID_ERROR_SESSION_E_SIGN_REQUIRES_APP_SELECTION = -2097151920;
+  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_DATE_OF_EXPIRY =
+      -2097151936;
+  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_DATE_OF_BIRTH =
+      -2097151935;
+  static const int RFID_ERROR_SESSION_INVALID_AUX_DATA_COMMUNITY_ID =
+      -2097151934;
+  static const int RFID_ERROR_SESSION_E_SIGN_REQUIRES_APP_SELECTION =
+      -2097151920;
   static const int RFID_ERROR_SESSION_E_SIGN_PIN_NOT_SET = -2097151919;
   static const int RFID_ERROR_SESSION_E_SIGN_PIN_NOT_VERIFIED = -2097151918;
   static const int RFID_ERROR_SESSION_INCORRECT_DATA = -2097151904;
   static const int RFID_ERROR_SESSION_FILE_NOT_ENOUGH_DATA = -2097086464;
   static const int RFID_ERROR_SESSION_FILE_INCORRECT_DATA = -2097020928;
   static const int RFID_ERROR_SESSION_FILE_UNEXPECTED_DATA = -2096955392;
-  static const int RFID_ERROR_SESSION_FILE_CONTENTS_UNEXPECTED_DATA = -2096889856;
+  static const int RFID_ERROR_SESSION_FILE_CONTENTS_UNEXPECTED_DATA =
+      -2096889856;
   static const int RFID_ERROR_SESSION_FILE_WRONG_TAG = -2096824320;
   static const int RFID_ERROR_SESSION_FILE_CANT_USE_DATA = -2096758784;
   static const int RFID_ERROR_SESSION_FILE_CANT_READ_DATA = -2096693248;
@@ -2819,7 +2929,8 @@ class eRPRM_SecurityFeatureType {
   static const int SECURITY_FEATURE_TYPE_BARCODE = 17;
   static const int SECURITY_FEATURE_TYPE_PATTERN_DIFFERENT_LINES_THICKNESS = 18;
   static const int SECURITY_FEATURE_TYPE_PORTRAIT_COMPARISON_VS_CAMERA = 19;
-  static const int SECURITY_FEATURE_TYPE_PORTRAIT_COMPARISON_RFID_VS_CAMERA = 20;
+  static const int SECURITY_FEATURE_TYPE_PORTRAIT_COMPARISON_RFID_VS_CAMERA =
+      20;
   static const int SECURITY_FEATURE_TYPE_GHOST_PHOTO = 21;
   static const int SECURITY_FEATURE_TYPE_CLEAR_GHOST_PHOTO = 22;
   static const int SECURITY_FEATURE_TYPE_INVISIBLE_OBJECT = 23;
@@ -4987,7 +5098,8 @@ class ScenarioIdentifier {
   static const String SCENARIO_MRZ_AND_LOCATE = "MrzAndLocate";
   static const String SCENARIO_MRZ_OR_OCR = "MrzOrOcr";
   static const String SCENARIO_MRZ_OR_BARCODE_OR_OCR = "MrzOrBarcodeOrOcr";
-  static const String SCENARIO_LOCATE_VISUAL_AND_MRZ_OR_OCR = "LocateVisual_And_MrzOrOcr";
+  static const String SCENARIO_LOCATE_VISUAL_AND_MRZ_OR_OCR =
+      "LocateVisual_And_MrzOrOcr";
   static const String SCENARIO_FULL_PROCESS = "FullProcess";
   static const String SCENARIO_FULL_AUTH = "FullAuth";
   static const String SCENARIO_ID3RUS = "Id3Rus";
@@ -5053,7 +5165,8 @@ class UIViewContentMode {
 }
 
 class FlutterDocumentReaderApi {
-  static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api/method');
+  static const MethodChannel _channel =
+      const MethodChannel('flutter_document_reader_api/method');
 
   static Future<dynamic> getAPIVersion() async {
     return await _channel.invokeMethod("getAPIVersion", []);
@@ -5236,7 +5349,8 @@ class FlutterDocumentReaderApi {
   }
 
   static Future<dynamic> initializeReaderWithDatabasePath(arg0, arg1) async {
-    return await _channel.invokeMethod("initializeReaderWithDatabasePath", [arg0, arg1]);
+    return await _channel
+        .invokeMethod("initializeReaderWithDatabasePath", [arg0, arg1]);
   }
 
   static Future<dynamic> prepareDatabase(arg0) async {
@@ -5264,14 +5378,17 @@ class FlutterDocumentReaderApi {
   }
 
   static Future<dynamic> showScannerWithCameraIDAndOpts(arg0, arg1) async {
-    return await _channel.invokeMethod("showScannerWithCameraIDAndOpts", [arg0, arg1]);
+    return await _channel
+        .invokeMethod("showScannerWithCameraIDAndOpts", [arg0, arg1]);
   }
 
   static Future<dynamic> recognizeImageWithImageInputParams(arg0, arg1) async {
-    return await _channel.invokeMethod("recognizeImageWithImageInputParams", [arg0, arg1]);
+    return await _channel
+        .invokeMethod("recognizeImageWithImageInputParams", [arg0, arg1]);
   }
 
   static Future<dynamic> recognizeImageWithCameraMode(arg0, arg1) async {
-    return await _channel.invokeMethod("recognizeImageWithCameraMode", [arg0, arg1]);
+    return await _channel
+        .invokeMethod("recognizeImageWithCameraMode", [arg0, arg1]);
   }
 }
