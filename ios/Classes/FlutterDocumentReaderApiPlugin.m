@@ -46,7 +46,7 @@ typedef void (^Callback)(NSString* response);
 -(void (^_Nullable)(NSProgress * _Nonnull progress))getProgressHandler:(Callback)successCallback :(Callback)errorCallback{
     return ^(NSProgress * _Nonnull progress) {
         if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithDouble:progress.fractionCompleted * 100]){
-            databaseProgressEvent([NSString stringWithFormat:@"%li", progress.fractionCompleted * 100]);
+            databaseProgressEvent([NSString stringWithFormat:@"%.1f", progress.fractionCompleted * 100]);
             [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithDouble:progress.fractionCompleted * 100]];
         }
     };

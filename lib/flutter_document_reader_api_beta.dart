@@ -5164,7 +5164,7 @@ class UIViewContentMode {
   static const int BottomRight = 12;
 }
 
-class FlutterDocumentReaderApi {
+class DocumentReader {
   static const MethodChannel _channel =
       const MethodChannel('flutter_document_reader_api/method');
 

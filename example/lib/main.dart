@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
   hideRfidUI() {
     // show animation
     this.restartRfidUI();
-    FlutterDocumentReaderApi.stopRFIDReader();
+    DocumentReader.stopRFIDReader();
     setState(() {
       isReadingRfid = false;
       rfidUIHeader = "Reading RFID";
@@ -111,33 +111,33 @@ class _MyAppState extends State<MyApp> {
       rfidProgress = results.value / 100;
     });
     if (Platform.isIOS)
-      FlutterDocumentReaderApi.setRfidSessionStatus(
+      DocumentReader.setRfidSessionStatus(
           rfidDescription + "\n" + results.value.toString() + "%");
   }
 
   customRFID() {
     this.showRfidUI();
-    FlutterDocumentReaderApi.readRFID();
+    DocumentReader.readRFID();
   }
 
   usualRFID() {
     setState(() => _doRfid = false);
-    FlutterDocumentReaderApi.startRFIDReader();
+    DocumentReader.startRFIDReader();
   }
 
   Future<void> initPlatformState() async {
-    print(await FlutterDocumentReaderApi.prepareDatabase("Full"));
+    print(await DocumentReader.prepareDatabase("Full"));
     setStatus("Initializing...");
     ByteData byteData = await rootBundle.load("assets/regula.license");
-    print(await FlutterDocumentReaderApi.initializeReader(base64.encode(byteData
+    print(await DocumentReader.initializeReader(base64.encode(byteData
         .buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes))));
     setStatus("Ready");
-    bool canRfid = await FlutterDocumentReaderApi.isRFIDAvailableForUse();
+    bool canRfid = await DocumentReader.isRFIDAvailableForUse();
     setState(() => _canRfid = canRfid);
     List<List<String>> scenarios = [];
     var scenariosTemp =
-        json.decode(await FlutterDocumentReaderApi.getAvailableScenarios());
+        json.decode(await DocumentReader.getAvailableScenarios());
     for (var i = 0; i < scenariosTemp.length; i++) {
       Scenario scenario = Scenario.fromJson(scenariosTemp[i] is String
           ? json.decode(scenariosTemp[i])
@@ -145,7 +145,7 @@ class _MyAppState extends State<MyApp> {
       scenarios.add([scenario.name, scenario.caption]);
     }
     setState(() => _scenarios = scenarios);
-    FlutterDocumentReaderApi.setConfig(jsonEncode({
+    DocumentReader.setConfig(jsonEncode({
       "functionality": {
         "videoCaptureMotionControl": true,
         "showCaptureButton": true
@@ -198,13 +198,13 @@ class _MyAppState extends State<MyApp> {
       String accessKey =
           results.getTextFieldValueByType(eVisualFieldType.FT_MRZ_STRINGS);
       if (accessKey != null && accessKey != "")
-        FlutterDocumentReaderApi.setRfidScenario(jsonEncode({
+        DocumentReader.setRfidScenario(jsonEncode({
           "mrz": accessKey.replaceAll('^', '').replaceAll('\n', ''),
           "pacePasswordType": eRFID_Password_Type.PPT_MRZ
         }));
       else if (results.getTextFieldValueByType(159) != null &&
           results.getTextFieldValueByType(159) != "")
-        FlutterDocumentReaderApi.setRfidScenario(jsonEncode({
+        DocumentReader.setRfidScenario(jsonEncode({
           "password": results.getTextFieldValueByType(159),
           "pacePasswordType": eRFID_Password_Type.PPT_CAN
         }));
@@ -217,7 +217,7 @@ class _MyAppState extends State<MyApp> {
 
   void onChangeRfid(bool value) {
     setState(() => _doRfid = value && _canRfid);
-    FlutterDocumentReaderApi.setConfig(jsonEncode({
+    DocumentReader.setConfig(jsonEncode({
       "processParams": {"doRfid": _doRfid}
     }));
   }
@@ -251,7 +251,7 @@ class _MyAppState extends State<MyApp> {
         groupValue: _selectedScenario,
         onChanged: (value) => setState(() {
               _selectedScenario = value;
-              FlutterDocumentReaderApi.setConfig(jsonEncode({
+              DocumentReader.setConfig(jsonEncode({
                 "processParams": {"scenario": _selectedScenario}
               }));
             }));
@@ -333,11 +333,11 @@ class _MyAppState extends State<MyApp> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             createButton("Scan document",
-                                () => FlutterDocumentReaderApi.showScanner()),
+                                () => DocumentReader.showScanner()),
                             createButton(
                                 "Scan image",
                                 () async =>
-                                    FlutterDocumentReaderApi.recognizeImage(
+                                    DocumentReader.recognizeImage(
                                         await getImage())),
                           ])
                     ]))),

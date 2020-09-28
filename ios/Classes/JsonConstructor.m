@@ -97,7 +97,7 @@
 
     output[@"barcodeType"] = [NSNumber numberWithInteger:documentReaderBarcodeField.barcodeType];
     output[@"status"] = [NSNumber numberWithInteger:documentReaderBarcodeField.status];
-    output[@"data"] = [[NSString alloc] initWithData:documentReaderBarcodeField.data encoding:NSUTF8StringEncoding];
+    output[@"data"] = [NSKeyedUnarchiver unarchiveObjectWithData:documentReaderBarcodeField.data];
     output[@"pageIndex"] = [NSNumber numberWithInteger:documentReaderBarcodeField.pageIndex];
     if(documentReaderBarcodeField.pdf417Info != nil)
         output[@"pdf417Info"] = [self generateRGLPDF417Info:documentReaderBarcodeField.pdf417Info];
