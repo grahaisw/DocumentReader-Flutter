@@ -129,8 +129,7 @@ class _MyAppState extends State<MyApp> {
     print(await DocumentReader.prepareDatabase("Full"));
     setStatus("Initializing...");
     ByteData byteData = await rootBundle.load("assets/regula.license");
-    print(await DocumentReader.initializeReader(base64.encode(byteData
-        .buffer
+    print(await DocumentReader.initializeReader(base64.encode(byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes))));
     setStatus("Ready");
     bool canRfid = await DocumentReader.isRFIDAvailableForUse();
@@ -336,9 +335,8 @@ class _MyAppState extends State<MyApp> {
                                 () => DocumentReader.showScanner()),
                             createButton(
                                 "Scan image",
-                                () async =>
-                                    DocumentReader.recognizeImage(
-                                        await getImage())),
+                                () async => DocumentReader.recognizeImage(
+                                    await getImage())),
                           ])
                     ]))),
           ])),
