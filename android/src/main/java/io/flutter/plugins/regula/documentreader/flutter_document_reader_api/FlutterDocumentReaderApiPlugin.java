@@ -44,7 +44,7 @@ import static com.regula.documentreader.api.DocumentReader.Instance;
 
 @SuppressWarnings({"unchecked", "NullableProblems", "ConstantConditions", "RedundantSuppression"})
 public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
-    private Object args;
+    private ArrayList<Object> args;
     private boolean backgroundRFIDEnabled = false;
     private Activity activity;
     private EventChannel.EventSink eventDatabaseProgress;
@@ -129,10 +129,13 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private <T> T args(int index) {
         try {
-            return (T) new JSONObject((String) ((List<T>) args).get(index));
+            if (args.get(index).getClass().equals(java.util.HashMap.class))
+                return (T) new JSONObject(((List<T>) args).get(index).toString());
+            if (args.get(index).getClass().equals(java.util.ArrayList.class))
+                return (T) new JSONArray(((List<T>) args).get(index).toString());
         } catch (JSONException ignored) {
-            return ((List<T>) args).get(index);
         }
+        return (T) args.get(index);
     }
 
     private void sendCompletion(int action, DocumentReaderResults results, Throwable error) {
@@ -146,7 +149,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         String action = call.method;
-        args = call.arguments;
+        args = (ArrayList<Object>) call.arguments;
         Callback callback = new Callback() {
             @Override
             public void success(Object o) {

@@ -82,14 +82,8 @@ typedef void (^Callback)(NSString* response);
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString* action = call.method;
-    NSDictionary* arguments = call.arguments;
-    NSMutableArray* args = [[NSMutableArray alloc] init];
-    for(id value in arguments)
-        @try{
-            [args addObject:[NSJSONSerialization JSONObjectWithData:[value dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil]];
-        }@catch(id exception){
-            [args addObject:value];
-        }
+    NSMutableArray* args = call.arguments;
+
     Callback successCallback = ^(id _Nullable response){
         result(response);
     };
