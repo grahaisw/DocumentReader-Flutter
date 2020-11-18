@@ -28,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -127,14 +129,42 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
         }
     }
 
-    private <T> T args(int index) {
-        try {
-            if (args.get(index).getClass().equals(java.util.HashMap.class))
-                return (T) new JSONObject(((List<T>) args).get(index).toString());
-            if (args.get(index).getClass().equals(java.util.ArrayList.class))
-                return (T) new JSONArray(((List<T>) args).get(index).toString());
-        } catch (JSONException ignored) {
+    private JSONArray arrayListToJSONArray(ArrayList<?> list) {
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getClass().equals(java.util.HashMap.class))
+                result.put(hashMapToJSONObject((HashMap<String, ?>) list.get(i)));
+            else if (list.get(i).getClass().equals(java.util.ArrayList.class))
+                result.put(arrayListToJSONArray((ArrayList<?>) list.get(i)));
+            else
+                result.put(list.get(i));
         }
+
+        return result;
+    }
+
+    private JSONObject hashMapToJSONObject(HashMap<String, ?> map) {
+        JSONObject result = new JSONObject();
+        try {
+            for (Map.Entry<String, ?> entry : map.entrySet()) {
+                if (entry.getValue().getClass().equals(java.util.HashMap.class))
+                    result.put(entry.getKey(), hashMapToJSONObject((HashMap<String, ?>) entry.getValue()));
+                else if (entry.getValue().getClass().equals(java.util.ArrayList.class))
+                    result.put(entry.getKey(), arrayListToJSONArray((ArrayList<?>) entry.getValue()));
+                else
+                    result.put(entry.getKey(), entry.getValue());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private <T> T args(int index) {
+        if (args.get(index).getClass().equals(java.util.HashMap.class))
+            return (T) hashMapToJSONObject((HashMap<String, ?>) args.get(index));
+        if (args.get(index).getClass().equals(java.util.ArrayList.class))
+            return (T) arrayListToJSONArray((ArrayList<?>) args.get(index));
         return (T) args.get(index);
     }
 
