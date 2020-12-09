@@ -1,2 +1,2 @@
-## 0.0.39\n
+## 0.0.40\n
 Flutter plugin for reading and validation of identification documents based on the Regula Document Reader SDK.
