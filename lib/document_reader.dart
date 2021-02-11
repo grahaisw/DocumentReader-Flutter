@@ -3,13 +3,32 @@ import 'package:flutter/services.dart';
 
 // Classes
 
-class Scenario {
-  int frame;
-  int frameOrientation;
+class DocumentReaderScenario {
   bool uvTorch;
-  bool barcodeExt;
+  bool seriesProcessMode;
+  String name;
+  String caption;
+  String description;
+
+  static DocumentReaderScenario fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderScenario();
+
+    result.uvTorch = jsonObject["uvTorch"];
+    result.seriesProcessMode = jsonObject["seriesProcessMode"];
+    result.name = jsonObject["name"];
+    result.caption = jsonObject["caption"];
+    result.description = jsonObject["description"];
+
+    return result;
+  }
+}
+
+class DocumentReaderScenarioFull {
+  bool uvTorch;
+  int frameOrientation;
   bool faceExt;
-  bool multiPageOff;
+  int multiPageOff;
   bool seriesProcessMode;
   double frameKWHLandscape;
   double frameKWHPortrait;
@@ -18,15 +37,14 @@ class Scenario {
   String name;
   String caption;
   String description;
+  bool manualCrop;
 
-  static Scenario fromJson(jsonObject) {
+  static DocumentReaderScenarioFull fromJson(jsonObject) {
     if (jsonObject == null) return null;
-    var result = new Scenario();
+    var result = new DocumentReaderScenarioFull();
 
-    result.frame = jsonObject["frame"];
-    result.frameOrientation = jsonObject["frameOrientation"];
     result.uvTorch = jsonObject["uvTorch"];
-    result.barcodeExt = jsonObject["barcodeExt"];
+    result.frameOrientation = jsonObject["frameOrientation"];
     result.faceExt = jsonObject["faceExt"];
     result.multiPageOff = jsonObject["multiPageOff"];
     result.seriesProcessMode = jsonObject["seriesProcessMode"];
@@ -37,6 +55,43 @@ class Scenario {
     result.name = jsonObject["name"];
     result.caption = jsonObject["caption"];
     result.description = jsonObject["description"];
+    result.manualCrop = jsonObject["manualCrop"];
+
+    return result;
+  }
+}
+
+class FaceMetaData {
+  int ID;
+  int rollAngle;
+  Bounds bounds;
+
+  static FaceMetaData fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new FaceMetaData();
+
+    result.ID = jsonObject["ID"];
+    result.rollAngle = jsonObject["rollAngle"];
+    result.bounds = Bounds.fromJson(jsonObject["bounds"]);
+
+    return result;
+  }
+}
+
+class Bounds {
+  int x;
+  int y;
+  int width;
+  int height;
+
+  static Bounds fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new Bounds();
+
+    result.x = jsonObject["x"];
+    result.y = jsonObject["y"];
+    result.width = jsonObject["width"];
+    result.height = jsonObject["height"];
 
     return result;
   }
@@ -61,6 +116,25 @@ class Rect {
   }
 }
 
+class DocReaderFieldRect {
+  int bottom;
+  int top;
+  int left;
+  int right;
+
+  static DocReaderFieldRect fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocReaderFieldRect();
+
+    result.bottom = jsonObject["bottom"];
+    result.top = jsonObject["top"];
+    result.left = jsonObject["left"];
+    result.right = jsonObject["right"];
+
+    return result;
+  }
+}
+
 class DocumentReaderGraphicField {
   int sourceType;
   int fieldType;
@@ -69,7 +143,7 @@ class DocumentReaderGraphicField {
   String fieldName;
   String lightName;
   String value;
-  Rect fieldRect;
+  DocReaderFieldRect fieldRect;
 
   static DocumentReaderGraphicField fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -82,7 +156,7 @@ class DocumentReaderGraphicField {
     result.fieldName = jsonObject["fieldName"];
     result.lightName = jsonObject["lightName"];
     result.value = jsonObject["value"];
-    result.fieldRect = Rect.fromJson(jsonObject["fieldRect"]);
+    result.fieldRect = DocReaderFieldRect.fromJson(jsonObject["fieldRect"]);
 
     return result;
   }
@@ -237,7 +311,6 @@ class ImageQuality {
   int featureType;
   int result;
   int type;
-  List<Rect> boundRects = [];
 
   static ImageQuality fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -246,9 +319,6 @@ class ImageQuality {
     result.featureType = jsonObject["featureType"];
     result.result = jsonObject["result"];
     result.type = jsonObject["type"];
-    if (jsonObject["boundRects"] != null)
-      for (var item in jsonObject["boundRects"])
-        result.boundRects.add(Rect.fromJson(item));
 
     return result;
   }
@@ -310,16 +380,16 @@ class DocumentReaderDocumentType {
 
 class DocumentReaderNotification {
   int code;
-  int value;
   int number;
+  int value;
 
   static DocumentReaderNotification fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderNotification();
 
     result.code = jsonObject["code"];
-    result.value = jsonObject["value"];
     result.number = jsonObject["number"];
+    result.value = jsonObject["value"];
 
     return result;
   }
@@ -886,8 +956,6 @@ class DocumentReaderCompletion {
 }
 
 class Throwable {
-  int code;
-  String domain;
   String localizedMessage;
   String message;
   String string;
@@ -897,8 +965,6 @@ class Throwable {
     if (jsonObject == null) return null;
     var result = new Throwable();
 
-    result.code = jsonObject["code"];
-    result.domain = jsonObject["domain"];
     result.localizedMessage = jsonObject["localizedMessage"];
     result.message = jsonObject["message"];
     result.string = jsonObject["string"];
@@ -1044,7 +1110,6 @@ class DocumentReaderResults {
 
     return null;
   }
-
 
   static DocumentReaderResults fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -1412,21 +1477,6 @@ class DocReaderOrientation {
   static const int LANDSCAPE = 2;
 }
 
-class DocumentReaderException {
-  static const int NATIVE_JAVA_EXCEPTION = 0;
-  static const int DOCUMENT_READER_STATE_EXCEPTION = 1;
-  static const int DOCUMENT_READER_WRONG_INPUT = 2;
-  static const int DOCUMENT_READER_BLE_EXCEPTION = 201;
-  static const int DB_DOWNLOAD_ERROR = 301;
-  static const int LICENSE_ABSENT_OR_CORRUPTED = 101;
-  static const int LICENSE_INVALID_DATE = 102;
-  static const int LICENSE_INVALID_VERSION = 103;
-  static const int LICENSE_INVALID_DEVICE_ID = 104;
-  static const int LICENSE_INVALID_SYSTEM_OR_APP_ID = 105;
-  static const int LICENSE_NO_CAPABILITIES = 106;
-  static const int LICENSE_NO_AUTHENTICITY = 107;
-}
-
 class eCheckDiagnose {
   static const int UNKNOWN = 0;
   static const int PASS = 1;
@@ -1459,7 +1509,6 @@ class eCheckDiagnose {
   static const int VISIBLE_ELEMENT_ABSENT = 41;
   static const int ELEMENT_SHOULD_BE_COLORED = 42;
   static const int ELEMENT_SHOULD_BE_GRAYSCALE = 43;
-  static const int PHOTO_WHITE_IR_DONT_MATCH = 44;
   static const int UV_DULL_PAPER_MRZ = 50;
   static const int FALSE_LUMINISCENCE_IN_MRZ = 51;
   static const int UV_DULL_PAPER_PHOTO = 52;
@@ -1469,7 +1518,6 @@ class eCheckDiagnose {
   static const int BAD_AREA_IN_AXIAL = 60;
   static const int FALSE_IPI_PARAMETERS = 65;
   static const int FIELD_POS_CORRECTOR_HIGHLIGHT_IR = 80;
-  static const int FIELD_POS_CORRECTOR_GLARES_IN_PHOTO_AREA = 81;
   static const int OVI_IR_INVISIBLE = 90;
   static const int OVI_INSUFFICIENT_AREA = 91;
   static const int OVI_COLOR_INVARIABLE = 92;
@@ -1480,8 +1528,6 @@ class eCheckDiagnose {
   static const int HOLOGRAM_ELEMENT_ABSENT = 100;
   static const int HOLOGRAM_SIDE_TOP_IMAGES_ABSENT = 101;
   static const int HOLOGRAM_ELEMENT_PRESENT = 102;
-  static const int HOLOGRAM_FRAMES_IS_ABSENT = 103;
-  static const int HOLOGRAM_HOLO_FIELD_IS_ABSENT = 104;
   static const int PHOTO_PATTERN_INTERRUPTED = 110;
   static const int PHOTO_PATTERN_SHIFTED = 111;
   static const int PHOTO_PATTERN_DIFFERENT_COLORS = 112;
@@ -1506,21 +1552,13 @@ class eCheckDiagnose {
   static const int PORTRAIT_COMPARISON_PORTRAITS_DIFFER = 150;
   static const int PORTRAIT_COMPARISON_NO_SERVICE_REPLY = 151;
   static const int PORTRAIT_COMPARISON_SERVICE_ERROR = 152;
-  static const int PORTRAIT_COMPARISON_NOT_ENOUGH_IMAGES = 153;
+  static const int PPORTRAIT_COMPARISON_NOT_ENOUGH_IMAGES = 153;
   static const int PORTRAIT_COMPARISON_NO_LIVE_PHOTO = 154;
   static const int PORTRAIT_COMPARISON_NO_SERVICE_LICENSE = 155;
   static const int PORTRAIT_COMPARISON_NO_PORTRAIT_DETECTED = 156;
   static const int MOBILE_IMAGES_UNSUITABLE_LIGHT_CONDITIONS = 160;
   static const int MOBILE_IMAGES_WHITE_UV_NO_DIFFERENCE = 161;
-  static const int FINGERPRINTS_COMPARISON_MISMATCH = 170;
-  static const int HOLO_PHOTO_FACE_NOT_DETECTED = 180;
-  static const int HOLO_PHOTO_FACE_COMPARISON_FAILED = 181;
-  static const int HOLO_PHOTO_FACE_GLARE_IN_CENTER_ABSENT = 182;
-  static const int HOLO_ELEMENT_SHAPE_ERROR = 183;
-  static const int ALGORITHM_STEPS_ERROR = 184;
-  static const int HOLO_AREAS_NOT_LOADED = 185;
-  static const int FINISHED_BY_TIMEOUT = 186;
-  static const int LAST_DIAGNOSE_VALUE = 190;
+  static const int LAST_DIAGNOSE_VALUE = 162;
 }
 
 class eCheckResult {
@@ -1609,8 +1647,6 @@ class eImageQualityCheckType {
   static const int IQC_IMAGE_GLARES = 0;
   static const int IQC_IMAGE_FOCUS = 1;
   static const int IQC_IMAGE_RESOLUTION = 2;
-  static const int IQC_PERSPECTIVE = 3;
-  static const int IQC_BOUNDS = 4;
 }
 
 class eProcessGLCommands {

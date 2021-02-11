@@ -164,7 +164,7 @@ class _MyAppState extends State<MyApp> {
     var scenariosTemp =
         json.decode(await DocumentReader.getAvailableScenarios());
     for (var i = 0; i < scenariosTemp.length; i++) {
-      Scenario scenario = Scenario.fromJson(scenariosTemp[i] is String
+      DocumentReaderScenario scenario = DocumentReaderScenario.fromJson(scenariosTemp[i] is String
           ? json.decode(scenariosTemp[i])
           : scenariosTemp[i]);
       scenarios.add([scenario.name, scenario.caption]);
