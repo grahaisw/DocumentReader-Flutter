@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     private Activity activity;
     private EventChannel.EventSink eventDatabaseProgress;
     private EventChannel.EventSink eventCompletion;
+    private EventChannel.EventSink eventVideoEncoderCompletion;
     private static int databaseDownloadProgress = 0;
 
     public FlutterDocumentReaderApiPlugin() {
@@ -81,6 +83,16 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             @Override
             public void onListen(Object arguments, EventChannel.EventSink events) {
                 eventDatabaseProgress = events;
+            }
+
+            @Override
+            public void onCancel(Object arguments) {
+            }
+        });
+        new EventChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_document_reader_api/event/video_encoder_completion").setStreamHandler(new EventChannel.StreamHandler() {
+            @Override
+            public void onListen(Object arguments, EventChannel.EventSink events) {
+                eventVideoEncoderCompletion = events;
             }
 
             @Override
@@ -175,6 +187,10 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private void sendProgress(int progress) {
         new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
+    }
+
+    private void sendVideoEncoderCompletion(String sessionId, File file){
+        new Handler(Looper.getMainLooper()).post(() -> eventVideoEncoderCompletion.success(JSONConstructor.generateVideoEncoderCompletion(sessionId, file).toString()));
     }
 
     @Override
@@ -676,9 +692,10 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private IDocumentReaderInitCompletion getInitCompletion(Callback callback) {
         return (success, error) -> {
-            if (success)
+            if (success) {
+                Instance().setVideoEncoderCompletion(this::sendVideoEncoderCompletion);
                 callback.success("init completed");
-            else
+            } else
                 callback.error("Init failed:" + error);
         };
     }

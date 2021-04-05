@@ -1599,7 +1599,7 @@ class DocumentReaderResults {
     int resultSum = 2;
     if (this.imageQuality == null) return resultSum;
 
-    for (ImageQuality iq in this.imageQuality.imageQualityList) {
+    for (ImageQuality iq in this.imageQuality[0].imageQualityList) {
       if (iq.type == imageQualityCheckType) {
         if (securityFeature == -1) {
           if (iq.result == 0) {
