@@ -1,4 +1,4 @@
-## 0.0.49\n
+## 0.0.50\n
 # 5.4.0
 **API**:
 - Added document authentication based on the detection of the presence of a hologram
