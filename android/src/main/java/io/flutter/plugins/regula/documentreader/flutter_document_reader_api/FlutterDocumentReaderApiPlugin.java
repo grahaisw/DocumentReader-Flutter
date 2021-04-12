@@ -182,15 +182,18 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void sendCompletion(int action, DocumentReaderResults results, Throwable error) {
-        new Handler(Looper.getMainLooper()).post(() -> eventCompletion.success(JSONConstructor.generateCompletion(action, results, error, getContext()).toString()));
+        if (eventCompletion != null)
+            new Handler(Looper.getMainLooper()).post(() -> eventCompletion.success(JSONConstructor.generateCompletion(action, results, error, getContext()).toString()));
     }
 
     private void sendProgress(int progress) {
-        new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
+        if (eventDatabaseProgress != null)
+            new Handler(Looper.getMainLooper()).post(() -> eventDatabaseProgress.success(progress + ""));
     }
 
-    private void sendVideoEncoderCompletion(String sessionId, File file){
-        new Handler(Looper.getMainLooper()).post(() -> eventVideoEncoderCompletion.success(JSONConstructor.generateVideoEncoderCompletion(sessionId, file).toString()));
+    private void sendVideoEncoderCompletion(String sessionId, File file) {
+        if (eventVideoEncoderCompletion != null)
+            new Handler(Looper.getMainLooper()).post(() -> eventVideoEncoderCompletion.success(JSONConstructor.generateVideoEncoderCompletion(sessionId, file).toString()));
     }
 
     @Override
