@@ -2043,9 +2043,11 @@ class DocReaderFrame {
 }
 
 class DocReaderOrientation {
-  static const int ROTATE = 0;
+  static const int ALL = 0;
   static const int PORTRAIT = 1;
   static const int LANDSCAPE = 2;
+  static const int LANDSCAPE_LEFT = 3;
+  static const int LANDSCAPE_RIGHT = 4;
 }
 
 class eCheckDiagnose {
