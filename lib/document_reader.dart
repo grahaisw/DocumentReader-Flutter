@@ -2220,6 +2220,9 @@ class eImageQualityCheckType {
   static const int IQC_IMAGE_GLARES = 0;
   static const int IQC_IMAGE_FOCUS = 1;
   static const int IQC_IMAGE_RESOLUTION = 2;
+  static const int IQC_IMAGE_COLORNESS = 3;
+  static const int IQC_PERSPECTIVE = 4;
+  static const int IQC_BOUNDS = 5;
 }
 
 class eProcessGLCommands {
