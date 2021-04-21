@@ -53,6 +53,9 @@ class _MyAppState extends State<MyApp> {
         .receiveBroadcastStream()
         .listen(
             (progress) => setStatus("Downloading database: " + progress + "%"));
+    EventChannel('flutter_document_reader_api/event/video_encoder_completion')
+        .receiveBroadcastStream()
+        .listen((event) => print(event));
   }
 
   void addCertificates() async {

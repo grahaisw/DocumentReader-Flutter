@@ -59,7 +59,8 @@ typedef void (^Callback)(NSString* response);
 -(void (^_Nullable)(NSProgress * _Nonnull progress))getProgressHandler:(Callback)successCallback :(Callback)errorCallback{
     return ^(NSProgress * _Nonnull progress) {
         if(FlutterDocumentReaderApiPlugin.databasePercentageDownloaded != [NSNumber numberWithDouble:progress.fractionCompleted * 100]){
-            databaseProgressEvent([NSString stringWithFormat:@"%.1f", progress.fractionCompleted * 100]);
+            if(databaseProgressEvent != nil)
+                databaseProgressEvent([NSString stringWithFormat:@"%.1f", progress.fractionCompleted * 100]);
             [FlutterDocumentReaderApiPlugin setDatabasePercentageDownloaded:[NSNumber numberWithDouble:progress.fractionCompleted * 100]];
         }
     };
@@ -67,28 +68,33 @@ typedef void (^Callback)(NSString* response);
 
 -(RGLDocumentReaderCompletion _Nonnull)getCompletion {
     return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error) {
-        completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]]);
+        if(completionEvent != nil)
+            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]]);
     };
 }
 
 -(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion {
     return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error, RGLRFIDErrorCodes errorCode) {
-        completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]]);
+        if(completionEvent != nil)
+            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]]);
     };
 }
 
 -(RGLRFIDNotificationCallback _Nonnull)getRFIDNotificationCallback {
     return ^(RGLRFIDNotificationAction notificationAction, RGLRFIDNotify* _Nullable notification) {
-        completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]]);
+        if(completionEvent != nil)
+            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]]);
     };
 }
 
 - (void)didFinishRecordingToFile:(NSURL *)fileURL {
-    videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:fileURL :nil]]);
+    if(videoEncoderCompletionEvent != nil)
+        videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:fileURL :nil]]);
 }
 
 - (void)didFailWithError:(NSError *)error {
-    videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:nil :error]]);
+    if(videoEncoderCompletionEvent != nil)
+        videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:nil :error]]);
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
