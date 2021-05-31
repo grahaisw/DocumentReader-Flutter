@@ -506,6 +506,7 @@ class ImageQualityGroup {
   int count;
   int result;
   List<ImageQuality> imageQualityList = [];
+  int pageIndex;
 
   static ImageQualityGroup fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -516,6 +517,7 @@ class ImageQualityGroup {
     if (jsonObject["imageQualityList"] != null)
       for (var item in jsonObject["imageQualityList"])
         result.imageQualityList.add(ImageQuality.fromJson(item));
+    result.pageIndex = jsonObject["pageIndex"];
 
     return result;
   }
@@ -526,6 +528,7 @@ class ImageQualityGroup {
     if (count != null) result.addAll({"count": count});
     if (result != null) result.addAll({"result": result});
     if (imageQualityList != null) result.addAll({"imageQualityList": imageQualityList});
+    if (pageIndex != null) result.addAll({"pageIndex": pageIndex});
 
     return result;
   }
@@ -1535,6 +1538,60 @@ class StackTraceElement {
   }
 }
 
+class PKDCertificate {
+  String binaryData;
+  int resourceType;
+  String privateKey;
+
+  static PKDCertificate fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new PKDCertificate();
+
+    result.binaryData = jsonObject["binaryData"];
+    result.resourceType = jsonObject["resourceType"];
+    result.privateKey = jsonObject["privateKey"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (binaryData != null) result.addAll({"binaryData": binaryData});
+    if (resourceType != null) result.addAll({"resourceType": resourceType});
+    if (privateKey != null) result.addAll({"privateKey": privateKey});
+
+    return result;
+  }
+}
+
+class ImageInputParam {
+  int width;
+  int height;
+  int type;
+
+  static ImageInputParam fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new ImageInputParam();
+
+    result.width = jsonObject["width"];
+    result.height = jsonObject["height"];
+    result.type = jsonObject["type"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (width != null) result.addAll({"width": width});
+    if (height != null) result.addAll({"height": height});
+    if (type != null) result.addAll({"type": type});
+
+    return result;
+  }
+}
+
 class DocumentReaderResults {
   int chipPage;
   int overallResult;
@@ -1595,11 +1652,19 @@ class DocumentReaderResults {
     return foundFields.length > 0 ? foundFields[0].value : null;
   }
 
-  int getQualityResult(int imageQualityCheckType, { int securityFeature = -1 }) {
+  int getQualityResult(int imageQualityCheckType, { int securityFeature = -1, int pageIndex = 0 }) {
     int resultSum = 2;
     if (this.imageQuality == null) return resultSum;
 
-    for (ImageQuality iq in this.imageQuality[0].imageQualityList) {
+    ImageQualityGroup imageQualityGroup;
+
+    for(ImageQualityGroup iq in this.imageQuality)
+      if (iq != null && iq.pageIndex == pageIndex)
+        imageQualityGroup = iq;
+    if (imageQualityGroup == null)
+      return resultSum;
+
+    for (ImageQuality iq in imageQualityGroup.imageQualityList) {
       if (iq.type == imageQualityCheckType) {
         if (securityFeature == -1) {
           if (iq.result == 0) {
