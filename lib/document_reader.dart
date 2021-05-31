@@ -4252,6 +4252,15 @@ class eVisualFieldType {
   static const int FT_CITIZENSHIP_STATUS = 625;
   static const int FT_MILITARY_SERVICE_FROM = 626;
   static const int FT_MILITARY_SERVICE_TO = 627;
+  static const int FT_DLCLASSCODE_NT_FROM = 628;
+  static const int FT_DLCLASSCODE_NT_TO = 629;
+  static const int FT_DLCLASSCODE_NT_NOTES = 630;
+  static const int FT_DLCLASSCODE_TN_FROM = 631;
+  static const int FT_DLCLASSCODE_TN_TO = 632;
+  static const int FT_DLCLASSCODE_TN_NOTES = 633;
+  static const int FT_DLCLASSCODE_D3_FROM = 634;
+  static const int FT_DLCLASSCODE_D3_TO = 635;
+  static const int FT_DLCLASSCODE_D3_NOTES = 636;
 
   static String getTranslation(int value) {
     switch (value) {
@@ -5409,6 +5418,24 @@ class eVisualFieldType {
         return "Military service from";
       case 627:
         return "Military service to";
+      case 628:
+        return "DL category NT valid from";
+      case 629:
+        return "DL category NT valid to";
+      case 630:
+        return "DL category NT codes";
+      case 631:
+        return "DL category TN valid from";
+      case 632:
+        return "DL category TN valid to";
+      case 633:
+        return "DL category TN codes";
+      case 634:
+        return "DL category D3 valid from";
+      case 635:
+        return "DL category D3 valid to";
+      case 636:
+        return "DL category D3 codes";
       default:
         return value.toString();
     }
