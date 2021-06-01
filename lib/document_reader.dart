@@ -2147,6 +2147,7 @@ class eCheckDiagnose {
   static const int VISIBLE_ELEMENT_ABSENT = 41;
   static const int ELEMENT_SHOULD_BE_COLORED = 42;
   static const int ELEMENT_SHOULD_BE_GRAYSCALE = 43;
+  static const int PHOTO_WHITE_IR_DONT_MATCH = 44;
   static const int UV_DULL_PAPER_MRZ = 50;
   static const int FALSE_LUMINISCENCE_IN_MRZ = 51;
   static const int UV_DULL_PAPER_PHOTO = 52;
@@ -2156,6 +2157,7 @@ class eCheckDiagnose {
   static const int BAD_AREA_IN_AXIAL = 60;
   static const int FALSE_IPI_PARAMETERS = 65;
   static const int FIELD_POS_CORRECTOR_HIGHLIGHT_IR = 80;
+  static const int FIELD_POS_CORRECTOR_GLARES_IN_PHOTO_AREA = 81;
   static const int OVI_IR_INVISIBLE = 90;
   static const int OVI_INSUFFICIENT_AREA = 91;
   static const int OVI_COLOR_INVARIABLE = 92;
@@ -2166,6 +2168,8 @@ class eCheckDiagnose {
   static const int HOLOGRAM_ELEMENT_ABSENT = 100;
   static const int HOLOGRAM_SIDE_TOP_IMAGES_ABSENT = 101;
   static const int HOLOGRAM_ELEMENT_PRESENT = 102;
+  static const int HOLOGRAM_FRAMES_IS_ABSENT = 103;
+  static const int HOLOGRAM_HOLO_FIELD_IS_ABSENT = 104;
   static const int PHOTO_PATTERN_INTERRUPTED = 110;
   static const int PHOTO_PATTERN_SHIFTED = 111;
   static const int PHOTO_PATTERN_DIFFERENT_COLORS = 112;
@@ -2190,13 +2194,21 @@ class eCheckDiagnose {
   static const int PORTRAIT_COMPARISON_PORTRAITS_DIFFER = 150;
   static const int PORTRAIT_COMPARISON_NO_SERVICE_REPLY = 151;
   static const int PORTRAIT_COMPARISON_SERVICE_ERROR = 152;
-  static const int PPORTRAIT_COMPARISON_NOT_ENOUGH_IMAGES = 153;
+  static const int PORTRAIT_COMPARISON_NOT_ENOUGH_IMAGES = 153;
   static const int PORTRAIT_COMPARISON_NO_LIVE_PHOTO = 154;
   static const int PORTRAIT_COMPARISON_NO_SERVICE_LICENSE = 155;
   static const int PORTRAIT_COMPARISON_NO_PORTRAIT_DETECTED = 156;
   static const int MOBILE_IMAGES_UNSUITABLE_LIGHT_CONDITIONS = 160;
   static const int MOBILE_IMAGES_WHITE_UV_NO_DIFFERENCE = 161;
-  static const int LAST_DIAGNOSE_VALUE = 162;
+  static const int FINGERPRINTS_COMPARISON_MISMATCH = 170;
+  static const int HOLO_PHOTO_FACE_NOT_DETECTED = 180;
+  static const int HOLO_PHOTO_FACE_COMPARISON_FAILED = 181;
+  static const int HOLO_PHOTO_FACE_GLARE_IN_CENTER_ABSENT = 182;
+  static const int HOLO_ELEMENT_SHAPE_ERROR = 183;
+  static const int ALGORITHM_STEPS_ERROR = 184;
+  static const int HOLO_AREAS_NOT_LOADED = 185;
+  static const int FINISHED_BY_TIMEOUT = 186;
+  static const int LAST_DIAGNOSE_VALUE = 190;
 }
 
 class eCheckResult {
@@ -2288,6 +2300,8 @@ class eImageQualityCheckType {
   static const int IQC_IMAGE_COLORNESS = 3;
   static const int IQC_PERSPECTIVE = 4;
   static const int IQC_BOUNDS = 5;
+  static const int IQC_SCREEN_CAPTURE = 6;
+  static const int IQC_PORTRAIT = 7;
 }
 
 class eProcessGLCommands {
