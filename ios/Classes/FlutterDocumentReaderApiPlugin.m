@@ -69,32 +69,32 @@ typedef void (^Callback)(NSString* response);
 -(RGLDocumentReaderCompletion _Nonnull)getCompletion {
     return ^(RGLDocReaderAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error) {
         if(completionEvent != nil)
-            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateDocReaderAction: action] :results :error :nil]]);
+            completionEvent([RGLJSONConstructor dictToString:[RGLJSONConstructor generateCompletion:[RGLJSONConstructor generateDocReaderAction: action] :results :error :nil]]);
     };
 }
 
 -(RGLRFIDProcessCompletion _Nonnull)getRFIDCompletion {
     return ^(RGLRFIDCompleteAction action, RGLDocumentReaderResults * _Nullable results, NSError * _Nullable error, RGLRFIDErrorCodes errorCode) {
         if(completionEvent != nil)
-            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDCompleteAction: action] :results :error :nil]]);
+            completionEvent([RGLJSONConstructor dictToString:[RGLJSONConstructor generateCompletion:[RGLJSONConstructor generateRFIDCompleteAction: action] :results :error :nil]]);
     };
 }
 
 -(RGLRFIDNotificationCallback _Nonnull)getRFIDNotificationCallback {
     return ^(RGLRFIDNotificationAction notificationAction, RGLRFIDNotify* _Nullable notification) {
         if(completionEvent != nil)
-            completionEvent([JSONConstructor dictToString:[JSONConstructor generateCompletion:[JSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]]);
+            completionEvent([RGLJSONConstructor dictToString:[RGLJSONConstructor generateCompletion:[RGLJSONConstructor generateRFIDNotificationAction:notificationAction] :nil :nil :notification]]);
     };
 }
 
 - (void)didFinishRecordingToFile:(NSURL *)fileURL {
     if(videoEncoderCompletionEvent != nil)
-        videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:fileURL :nil]]);
+        videoEncoderCompletionEvent([RGLJSONConstructor dictToString:[RGLJSONConstructor generateVideoEncoderCompletion:fileURL :nil]]);
 }
 
 - (void)didFailWithError:(NSError *)error {
     if(videoEncoderCompletionEvent != nil)
-        videoEncoderCompletionEvent([JSONConstructor dictToString:[JSONConstructor generateVideoEncoderCompletion:nil :error]]);
+        videoEncoderCompletionEvent([RGLJSONConstructor dictToString:[RGLJSONConstructor generateVideoEncoderCompletion:nil :error]]);
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -370,7 +370,7 @@ typedef void (^Callback)(NSString* response);
 - (void) addPKDCertificates:(NSArray*)input :(Callback)successCallback :(Callback)errorCallback{
     NSMutableArray *certificates = [[NSMutableArray alloc] init];
     for(NSDictionary* certificateJSON in input)
-        [certificates addObject:[JSONConstructor RGLPKDCertificateFromJson:certificateJSON]];
+        [certificates addObject:[RGLJSONConstructor RGLPKDCertificateFromJson:certificateJSON]];
     [RGLDocReader.shared addPKDCertificates:certificates];
     [self result:@"" :successCallback];
 }
@@ -381,7 +381,7 @@ typedef void (^Callback)(NSString* response);
 }
 
 - (void) selectedScenario:(Callback)successCallback :(Callback)errorCallback{
-    [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLScenario:RGLDocReader.shared.selectedScenario]] :successCallback];
+    [self result:[RGLJSONConstructor dictToString:[RGLJSONConstructor generateRGLScenario:RGLDocReader.shared.selectedScenario]] :successCallback];
 }
 
 - (void) stopScanner:(Callback)successCallback :(Callback)errorCallback{
@@ -503,7 +503,7 @@ typedef void (^Callback)(NSString* response);
     BOOL success = false;
     for(RGLScenario *scenario in RGLDocReader.shared.availableScenarios)
         if([scenario.identifier isEqualToString:scenarioID]){
-            [self result:[JSONConstructor dictToString:[JSONConstructor generateRGLScenario:scenario]] :successCallback];
+            [self result:[RGLJSONConstructor dictToString:[RGLJSONConstructor generateRGLScenario:scenario]] :successCallback];
             success = true;
             break;
         }
@@ -514,7 +514,7 @@ typedef void (^Callback)(NSString* response);
 - (void) getAvailableScenarios:(Callback)successCallback :(Callback)errorCallback{
     NSMutableArray *availableScenarios = [[NSMutableArray alloc] init];
     for(RGLScenario *scenario in RGLDocReader.shared.availableScenarios)
-        [availableScenarios addObject:[JSONConstructor dictToString:[JSONConstructor generateRGLScenario:scenario]]];
+        [availableScenarios addObject:[RGLJSONConstructor dictToString:[RGLJSONConstructor generateRGLScenario:scenario]]];
     [self result:[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:availableScenarios options:NSJSONWritingPrettyPrinted error:nil] encoding:NSUTF8StringEncoding] :successCallback];
 }
 

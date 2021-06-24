@@ -1,6 +1,6 @@
 #import <Flutter/Flutter.h>
 #import <DocumentReader/DocumentReader.h>
-#import "JSONConstructor.h"
+#import "RGLJSONConstructor.h"
 #import "RegulaConfig.h"
 
 @interface FlutterDocumentReaderApiPlugin : NSObject<FlutterPlugin, RGLRecordScanningProcessDelegate>
