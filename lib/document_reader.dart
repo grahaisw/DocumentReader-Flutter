@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 // Classes
 
 class DocumentReaderScenario {
-  bool uvTorch;
-  bool seriesProcessMode;
-  String name;
-  String caption;
-  String description;
+  bool? uvTorch;
+  bool? seriesProcessMode;
+  String? name;
+  String? caption;
+  String? description;
 
-  static DocumentReaderScenario fromJson(jsonObject) {
+  static DocumentReaderScenario? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderScenario();
 
@@ -37,21 +37,21 @@ class DocumentReaderScenario {
 }
 
 class DocumentReaderScenarioFull {
-  bool uvTorch;
-  int frameOrientation;
-  bool faceExt;
-  int multiPageOff;
-  bool seriesProcessMode;
-  double frameKWHLandscape;
-  double frameKWHPortrait;
-  double frameKWHDoublePageSpreadPortrait;
-  double frameKWHDoublePageSpreadLandscape;
-  String name;
-  String caption;
-  String description;
-  bool manualCrop;
+  bool? uvTorch;
+  int? frameOrientation;
+  bool? faceExt;
+  int? multiPageOff;
+  bool? seriesProcessMode;
+  double? frameKWHLandscape;
+  double? frameKWHPortrait;
+  double? frameKWHDoublePageSpreadPortrait;
+  double? frameKWHDoublePageSpreadLandscape;
+  String? name;
+  String? caption;
+  String? description;
+  bool? manualCrop;
 
-  static DocumentReaderScenarioFull fromJson(jsonObject) {
+  static DocumentReaderScenarioFull? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderScenarioFull();
 
@@ -94,11 +94,11 @@ class DocumentReaderScenarioFull {
 }
 
 class FaceMetaData {
-  int ID;
-  int rollAngle;
-  Bounds bounds;
+  int? ID;
+  int? rollAngle;
+  Bounds? bounds;
 
-  static FaceMetaData fromJson(jsonObject) {
+  static FaceMetaData? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new FaceMetaData();
 
@@ -121,12 +121,12 @@ class FaceMetaData {
 }
 
 class Bounds {
-  int x;
-  int y;
-  int width;
-  int height;
+  int? x;
+  int? y;
+  int? width;
+  int? height;
 
-  static Bounds fromJson(jsonObject) {
+  static Bounds? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Bounds();
 
@@ -151,12 +151,12 @@ class Bounds {
 }
 
 class Rect {
-  int bottom;
-  int top;
-  int left;
-  int right;
+  int? bottom;
+  int? top;
+  int? left;
+  int? right;
 
-  static Rect fromJson(jsonObject) {
+  static Rect? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Rect();
 
@@ -181,12 +181,12 @@ class Rect {
 }
 
 class DocReaderFieldRect {
-  int bottom;
-  int top;
-  int left;
-  int right;
+  int? bottom;
+  int? top;
+  int? left;
+  int? right;
 
-  static DocReaderFieldRect fromJson(jsonObject) {
+  static DocReaderFieldRect? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocReaderFieldRect();
 
@@ -211,16 +211,16 @@ class DocReaderFieldRect {
 }
 
 class DocumentReaderGraphicField {
-  int sourceType;
-  int fieldType;
-  int lightType;
-  int pageIndex;
-  String fieldName;
-  String lightName;
-  String value;
-  DocReaderFieldRect fieldRect;
+  int? sourceType;
+  int? fieldType;
+  int? lightType;
+  int? pageIndex;
+  String? fieldName;
+  String? lightName;
+  String? value;
+  DocReaderFieldRect? fieldRect;
 
-  static DocumentReaderGraphicField fromJson(jsonObject) {
+  static DocumentReaderGraphicField? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderGraphicField();
 
@@ -253,9 +253,9 @@ class DocumentReaderGraphicField {
 }
 
 class DocumentReaderGraphicResult {
-  List<DocumentReaderGraphicField> fields = [];
+  List<DocumentReaderGraphicField?> fields = [];
 
-  static DocumentReaderGraphicResult fromJson(jsonObject) {
+  static DocumentReaderGraphicResult? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderGraphicResult();
 
@@ -276,16 +276,16 @@ class DocumentReaderGraphicResult {
 }
 
 class DocumentReaderValue {
-  int pageIndex;
-  int sourceType;
-  int validity;
-  int probability;
-  String value;
-  String originalValue;
-  Rect boundRect;
+  int? pageIndex;
+  int? sourceType;
+  int? validity;
+  int? probability;
+  String? value;
+  String? originalValue;
+  Rect? boundRect;
   Map<int, int> comparison = {};
 
-  static DocumentReaderValue fromJson(jsonObject) {
+  static DocumentReaderValue? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderValue();
 
@@ -319,15 +319,15 @@ class DocumentReaderValue {
 }
 
 class DocumentReaderTextField {
-  int fieldType;
-  int lcid;
-  int status;
-  String lcidName;
-  String fieldName;
-  DocumentReaderValue value;
-  List<DocumentReaderValue> values = [];
+  int? fieldType;
+  int? lcid;
+  int? status;
+  String? lcidName;
+  String? fieldName;
+  DocumentReaderValue? value;
+  List<DocumentReaderValue?> values = [];
 
-  static DocumentReaderTextField fromJson(jsonObject) {
+  static DocumentReaderTextField? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderTextField();
 
@@ -360,10 +360,10 @@ class DocumentReaderTextField {
 }
 
 class DocumentReaderTextResult {
-  int status;
-  List<DocumentReaderTextField> fields = [];
+  int? status;
+  List<DocumentReaderTextField?> fields = [];
 
-  static DocumentReaderTextResult fromJson(jsonObject) {
+  static DocumentReaderTextResult? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderTextResult();
 
@@ -386,10 +386,10 @@ class DocumentReaderTextResult {
 }
 
 class Coordinate {
-  int x;
-  int y;
+  int? x;
+  int? y;
 
-  static Coordinate fromJson(jsonObject) {
+  static Coordinate? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Coordinate();
 
@@ -410,24 +410,24 @@ class Coordinate {
 }
 
 class ElementPosition {
-  int docFormat;
-  int width;
-  int height;
-  int dpi;
-  int pageIndex;
-  int inverse;
-  int perspectiveTr;
-  int objArea;
-  int objIntAngleDev;
-  int resultStatus;
-  double angle;
-  Coordinate center;
-  Coordinate leftTop;
-  Coordinate leftBottom;
-  Coordinate rightTop;
-  Coordinate rightBottom;
+  int? docFormat;
+  int? width;
+  int? height;
+  int? dpi;
+  int? pageIndex;
+  int? inverse;
+  int? perspectiveTr;
+  int? objArea;
+  int? objIntAngleDev;
+  int? resultStatus;
+  double? angle;
+  Coordinate? center;
+  Coordinate? leftTop;
+  Coordinate? leftBottom;
+  Coordinate? rightTop;
+  Coordinate? rightBottom;
 
-  static ElementPosition fromJson(jsonObject) {
+  static ElementPosition? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ElementPosition();
 
@@ -476,11 +476,11 @@ class ElementPosition {
 }
 
 class ImageQuality {
-  int featureType;
-  int result;
-  int type;
+  int? featureType;
+  int? result;
+  int? type;
 
-  static ImageQuality fromJson(jsonObject) {
+  static ImageQuality? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ImageQuality();
 
@@ -503,12 +503,12 @@ class ImageQuality {
 }
 
 class ImageQualityGroup {
-  int count;
-  int result;
-  List<ImageQuality> imageQualityList = [];
-  int pageIndex;
+  int? count;
+  int? result;
+  List<ImageQuality?> imageQualityList = [];
+  int? pageIndex;
 
-  static ImageQualityGroup fromJson(jsonObject) {
+  static ImageQualityGroup? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ImageQualityGroup();
 
@@ -535,19 +535,19 @@ class ImageQualityGroup {
 }
 
 class DocumentReaderDocumentType {
-  int pageIndex;
-  int documentID;
-  int dType;
-  int dFormat;
-  bool dMRZ;
-  String name;
-  String ICAOCode;
-  String dDescription;
-  String dYear;
-  String dCountryName;
-  List<int> FDSID = [];
+  int? pageIndex;
+  int? documentID;
+  int? dType;
+  int? dFormat;
+  bool? dMRZ;
+  String? name;
+  String? ICAOCode;
+  String? dDescription;
+  String? dYear;
+  String? dCountryName;
+  List<int?> FDSID = [];
 
-  static DocumentReaderDocumentType fromJson(jsonObject) {
+  static DocumentReaderDocumentType? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderDocumentType();
 
@@ -588,11 +588,11 @@ class DocumentReaderDocumentType {
 }
 
 class DocumentReaderNotification {
-  int code;
-  int number;
-  int value;
+  int? code;
+  int? number;
+  int? value;
 
-  static DocumentReaderNotification fromJson(jsonObject) {
+  static DocumentReaderNotification? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderNotification();
 
@@ -615,12 +615,12 @@ class DocumentReaderNotification {
 }
 
 class AccessControlProcedureType {
-  int activeOptionIdx;
-  int type;
-  int status;
-  List<int> notifications = [];
+  int? activeOptionIdx;
+  int? type;
+  int? status;
+  List<int?> notifications = [];
 
-  static AccessControlProcedureType fromJson(jsonObject) {
+  static AccessControlProcedureType? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new AccessControlProcedureType();
 
@@ -647,12 +647,12 @@ class AccessControlProcedureType {
 }
 
 class FileData {
-  int length;
-  int type;
-  int status;
-  String data;
+  int? length;
+  int? type;
+  int? status;
+  String? data;
 
-  static FileData fromJson(jsonObject) {
+  static FileData? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new FileData();
 
@@ -677,10 +677,10 @@ class FileData {
 }
 
 class CertificateData {
-  int length;
-  String data;
+  int? length;
+  String? data;
 
-  static CertificateData fromJson(jsonObject) {
+  static CertificateData? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CertificateData();
 
@@ -701,9 +701,9 @@ class CertificateData {
 }
 
 class SecurityObjectCertificates {
-  CertificateData securityObject;
+  CertificateData? securityObject;
 
-  static SecurityObjectCertificates fromJson(jsonObject) {
+  static SecurityObjectCertificates? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SecurityObjectCertificates();
 
@@ -722,19 +722,19 @@ class SecurityObjectCertificates {
 }
 
 class File {
-  int readingTime;
-  int type;
-  int pAStatus;
-  int readingStatus;
-  String fileID;
-  FileData fileData;
-  SecurityObjectCertificates certificates;
-  List<int> docFieldsText = [];
-  List<int> docFieldsGraphics = [];
-  List<int> docFieldsOriginals = [];
-  List<int> notifications = [];
+  int? readingTime;
+  int? type;
+  int? pAStatus;
+  int? readingStatus;
+  String? fileID;
+  FileData? fileData;
+  SecurityObjectCertificates? certificates;
+  List<int?> docFieldsText = [];
+  List<int?> docFieldsGraphics = [];
+  List<int?> docFieldsOriginals = [];
+  List<int?> notifications = [];
 
-  static File fromJson(jsonObject) {
+  static File? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new File();
 
@@ -781,15 +781,15 @@ class File {
 }
 
 class Application {
-  int type;
-  int status;
-  String applicationID;
-  String dataHashAlgorithm;
-  String unicodeVersion;
-  String version;
-  List<File> files = [];
+  int? type;
+  int? status;
+  String? applicationID;
+  String? dataHashAlgorithm;
+  String? unicodeVersion;
+  String? version;
+  List<File?> files = [];
 
-  static Application fromJson(jsonObject) {
+  static Application? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Application();
 
@@ -822,13 +822,13 @@ class Application {
 }
 
 class Value {
-  int length;
-  int type;
-  int status;
-  String data;
-  String format;
+  int? length;
+  int? type;
+  int? status;
+  String? data;
+  String? format;
 
-  static Value fromJson(jsonObject) {
+  static Value? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Value();
 
@@ -855,10 +855,10 @@ class Value {
 }
 
 class Attribute {
-  String type;
-  Value value;
+  String? type;
+  Value? value;
 
-  static Attribute fromJson(jsonObject) {
+  static Attribute? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Attribute();
 
@@ -879,11 +879,11 @@ class Attribute {
 }
 
 class Authority {
-  String data;
-  Value friendlyName;
-  List<Attribute> attributes = [];
+  String? data;
+  Value? friendlyName;
+  List<Attribute?> attributes = [];
 
-  static Authority fromJson(jsonObject) {
+  static Authority? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Authority();
 
@@ -908,10 +908,10 @@ class Authority {
 }
 
 class Extension {
-  String data;
-  String type;
+  String? data;
+  String? type;
 
-  static Extension fromJson(jsonObject) {
+  static Extension? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Extension();
 
@@ -932,10 +932,10 @@ class Extension {
 }
 
 class Validity {
-  Value notAfter;
-  Value notBefore;
+  Value? notAfter;
+  Value? notBefore;
 
-  static Validity fromJson(jsonObject) {
+  static Validity? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Validity();
 
@@ -956,21 +956,21 @@ class Validity {
 }
 
 class CertificateChain {
-  int origin;
-  int type;
-  int version;
-  int paStatus;
-  String serialNumber;
-  String signatureAlgorithm;
-  String subjectPKAlgorithm;
-  Value fileName;
-  Validity validity;
-  Authority issuer;
-  Authority subject;
-  List<int> notifications = [];
-  List<Extension> extensions = [];
+  int? origin;
+  int? type;
+  int? version;
+  int? paStatus;
+  String? serialNumber;
+  String? signatureAlgorithm;
+  String? subjectPKAlgorithm;
+  Value? fileName;
+  Validity? validity;
+  Authority? issuer;
+  Authority? subject;
+  List<int?> notifications = [];
+  List<Extension?> extensions = [];
 
-  static CertificateChain fromJson(jsonObject) {
+  static CertificateChain? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CertificateChain();
 
@@ -1017,20 +1017,20 @@ class CertificateChain {
 }
 
 class SignerInfo {
-  int version;
-  int paStatus;
-  String dataToHash;
-  String digestAlgorithm;
-  String signatureAlgorithm;
-  Value serialNumber;
-  Value signature;
-  Value subjectKeyIdentifier;
-  Authority issuer;
-  List<int> notifications = [];
-  List<Extension> signedAttributes = [];
-  List<CertificateChain> certificateChain = [];
+  int? version;
+  int? paStatus;
+  String? dataToHash;
+  String? digestAlgorithm;
+  String? signatureAlgorithm;
+  Value? serialNumber;
+  Value? signature;
+  Value? subjectKeyIdentifier;
+  Authority? issuer;
+  List<int?> notifications = [];
+  List<Extension?> signedAttributes = [];
+  List<CertificateChain?> certificateChain = [];
 
-  static SignerInfo fromJson(jsonObject) {
+  static SignerInfo? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SignerInfo();
 
@@ -1077,13 +1077,13 @@ class SignerInfo {
 }
 
 class SecurityObject {
-  int fileReference;
-  int version;
-  String objectType;
-  List<int> notifications = [];
-  List<SignerInfo> signerInfos = [];
+  int? fileReference;
+  int? version;
+  String? objectType;
+  List<int?> notifications = [];
+  List<SignerInfo?> signerInfos = [];
 
-  static SecurityObject fromJson(jsonObject) {
+  static SecurityObject? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new SecurityObject();
 
@@ -1114,22 +1114,22 @@ class SecurityObject {
 }
 
 class CardProperties {
-  int aTQA;
-  int bitRateR;
-  int bitRateS;
-  int chipTypeA;
-  int mifareMemory;
-  int rfidType;
-  int sAK;
-  bool support4;
-  bool supportMifare;
-  String aTQB;
-  String aTR;
-  String baudrate1;
-  String baudrate2;
-  String uID;
+  int? aTQA;
+  int? bitRateR;
+  int? bitRateS;
+  int? chipTypeA;
+  int? mifareMemory;
+  int? rfidType;
+  int? sAK;
+  bool? support4;
+  bool? supportMifare;
+  String? aTQB;
+  String? aTR;
+  String? baudrate1;
+  String? baudrate2;
+  String? uID;
 
-  static CardProperties fromJson(jsonObject) {
+  static CardProperties? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new CardProperties();
 
@@ -1174,18 +1174,18 @@ class CardProperties {
 }
 
 class RFIDSessionData {
-  int totalBytesReceived;
-  int totalBytesSent;
-  int status;
-  int extLeSupport;
-  int processTime;
-  CardProperties cardProperties;
-  RFIDSessionDataStatus sessionDataStatus;
-  List<AccessControlProcedureType> accessControls = [];
-  List<Application> applications = [];
-  List<SecurityObject> securityObjects = [];
+  int? totalBytesReceived;
+  int? totalBytesSent;
+  int? status;
+  int? extLeSupport;
+  int? processTime;
+  CardProperties? cardProperties;
+  RFIDSessionDataStatus? sessionDataStatus;
+  List<AccessControlProcedureType?> accessControls = [];
+  List<Application?> applications = [];
+  List<SecurityObject?> securityObjects = [];
 
-  static RFIDSessionData fromJson(jsonObject) {
+  static RFIDSessionData? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new RFIDSessionData();
 
@@ -1228,13 +1228,13 @@ class RFIDSessionData {
 }
 
 class DocumentReaderAuthenticityCheck {
-  int type;
-  int status;
-  String typeName;
-  int pageIndex;
-  List<DocumentReaderAuthenticityElement> elements = [];
+  int? type;
+  int? status;
+  String? typeName;
+  int? pageIndex;
+  List<DocumentReaderAuthenticityElement?> elements = [];
 
-  static DocumentReaderAuthenticityCheck fromJson(jsonObject) {
+  static DocumentReaderAuthenticityCheck? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityCheck();
 
@@ -1263,11 +1263,11 @@ class DocumentReaderAuthenticityCheck {
 }
 
 class PDF417Info {
-  int errorLevel;
-  int columns;
-  int rows;
+  int? errorLevel;
+  int? columns;
+  int? rows;
 
-  static PDF417Info fromJson(jsonObject) {
+  static PDF417Info? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new PDF417Info();
 
@@ -1290,15 +1290,15 @@ class PDF417Info {
 }
 
 class RFIDSessionDataStatus {
-  int AA;
-  int BAC;
-  int CA;
-  int PA;
-  int PACE;
-  int TA;
-  int overallStatus;
+  int? AA;
+  int? BAC;
+  int? CA;
+  int? PA;
+  int? PACE;
+  int? TA;
+  int? overallStatus;
 
-  static RFIDSessionDataStatus fromJson(jsonObject) {
+  static RFIDSessionDataStatus? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new RFIDSessionDataStatus();
 
@@ -1329,9 +1329,9 @@ class RFIDSessionDataStatus {
 }
 
 class DocumentReaderBarcodeResult {
-  List<DocumentReaderBarcodeField> fields = [];
+  List<DocumentReaderBarcodeField?> fields = [];
 
-  static DocumentReaderBarcodeResult fromJson(jsonObject) {
+  static DocumentReaderBarcodeResult? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderBarcodeResult();
 
@@ -1352,13 +1352,13 @@ class DocumentReaderBarcodeResult {
 }
 
 class DocumentReaderBarcodeField {
-  int barcodeType;
-  int status;
-  int pageIndex;
-  PDF417Info pdf417Info;
-  List<dynamic> data;
+  int? barcodeType;
+  int? status;
+  int? pageIndex;
+  PDF417Info? pdf417Info;
+  List<dynamic>? data;
 
-  static DocumentReaderBarcodeField fromJson(jsonObject) {
+  static DocumentReaderBarcodeField? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderBarcodeField();
 
@@ -1385,10 +1385,10 @@ class DocumentReaderBarcodeField {
 }
 
 class DocumentReaderAuthenticityResult {
-  int status;
-  List<DocumentReaderAuthenticityCheck> checks = [];
+  int? status;
+  List<DocumentReaderAuthenticityCheck?> checks = [];
 
-  static DocumentReaderAuthenticityResult fromJson(jsonObject) {
+  static DocumentReaderAuthenticityResult? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityResult();
 
@@ -1411,13 +1411,13 @@ class DocumentReaderAuthenticityResult {
 }
 
 class DocumentReaderAuthenticityElement {
-  int status;
-  int elementType;
-  int elementDiagnose;
-  String elementTypeName;
-  String elementDiagnoseName;
+  int? status;
+  int? elementType;
+  int? elementDiagnose;
+  String? elementTypeName;
+  String? elementDiagnoseName;
 
-  static DocumentReaderAuthenticityElement fromJson(jsonObject) {
+  static DocumentReaderAuthenticityElement? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderAuthenticityElement();
 
@@ -1444,11 +1444,11 @@ class DocumentReaderAuthenticityElement {
 }
 
 class DocumentReaderCompletion {
-  int action;
-  DocumentReaderResults results;
-  Throwable error;
+  int? action;
+  DocumentReaderResults? results;
+  Throwable? error;
 
-  static DocumentReaderCompletion fromJson(jsonObject) {
+  static DocumentReaderCompletion? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderCompletion();
 
@@ -1471,12 +1471,12 @@ class DocumentReaderCompletion {
 }
 
 class Throwable {
-  String localizedMessage;
-  String message;
-  String string;
-  List<StackTraceElement> stackTrace = [];
+  String? localizedMessage;
+  String? message;
+  String? string;
+  List<StackTraceElement?> stackTrace = [];
 
-  static Throwable fromJson(jsonObject) {
+  static Throwable? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new Throwable();
 
@@ -1503,14 +1503,14 @@ class Throwable {
 }
 
 class StackTraceElement {
-  int lineNumber;
-  bool isNativeMethod;
-  String className;
-  String fileName;
-  String methodName;
-  String string;
+  int? lineNumber;
+  bool? isNativeMethod;
+  String? className;
+  String? fileName;
+  String? methodName;
+  String? string;
 
-  static StackTraceElement fromJson(jsonObject) {
+  static StackTraceElement? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new StackTraceElement();
 
@@ -1539,11 +1539,11 @@ class StackTraceElement {
 }
 
 class PKDCertificate {
-  String binaryData;
-  int resourceType;
-  String privateKey;
+  String? binaryData;
+  int? resourceType;
+  String? privateKey;
 
-  static PKDCertificate fromJson(jsonObject) {
+  static PKDCertificate? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new PKDCertificate();
 
@@ -1566,11 +1566,11 @@ class PKDCertificate {
 }
 
 class ImageInputParam {
-  int width;
-  int height;
-  int type;
+  int? width;
+  int? height;
+  int? type;
 
-  static ImageInputParam fromJson(jsonObject) {
+  static ImageInputParam? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new ImageInputParam();
 
@@ -1593,29 +1593,29 @@ class ImageInputParam {
 }
 
 class DocumentReaderResults {
-  int chipPage;
-  int overallResult;
-  int processingFinishedStatus;
-  int elapsedTime;
-  int elapsedTimeRFID;
-  int morePagesAvailable;
-  int rfidResult;
-  bool highResolution;
-  DocumentReaderGraphicResult graphicResult;
-  DocumentReaderTextResult textResult;
-  List<ElementPosition> documentPosition = [];
-  List<ElementPosition> barcodePosition = [];
-  List<ElementPosition> mrzPosition = [];
-  List<ImageQualityGroup> imageQuality = [];
-  String rawResult;
-  DocumentReaderNotification documentReaderNotification;
-  RFIDSessionData rfidSessionData;
-  DocumentReaderAuthenticityResult authenticityResult;
-  DocumentReaderBarcodeResult barcodeResult;
-  List<DocumentReaderDocumentType> documentType = [];
+  int? chipPage;
+  int? overallResult;
+  int? processingFinishedStatus;
+  int? elapsedTime;
+  int? elapsedTimeRFID;
+  int? morePagesAvailable;
+  int? rfidResult;
+  bool? highResolution;
+  DocumentReaderGraphicResult? graphicResult;
+  DocumentReaderTextResult? textResult;
+  List<ElementPosition?> documentPosition = [];
+  List<ElementPosition?> barcodePosition = [];
+  List<ElementPosition?> mrzPosition = [];
+  List<ImageQualityGroup?> imageQuality = [];
+  String? rawResult;
+  DocumentReaderNotification? documentReaderNotification;
+  RFIDSessionData? rfidSessionData;
+  DocumentReaderAuthenticityResult? authenticityResult;
+  DocumentReaderBarcodeResult? barcodeResult;
+  List<DocumentReaderDocumentType?> documentType = [];
 
-  String getTextFieldValueByType(int fieldType, { int lcid = 0, int source = -1, bool original = false }) {
-    if (this.textResult == null)return null;
+  String? getTextFieldValueByType(int fieldType, { int lcid = 0, int source = -1, bool original = false }) {
+    if (this.textResult == null) return null;
     var field = this.findByTypeAndLcid(fieldType, lcid);
     if (field == null) return null;
     var value = this.findBySource(field, source);
@@ -1623,18 +1623,18 @@ class DocumentReaderResults {
     return original ? value.originalValue : value.value;
   }
 
-  int getTextFieldStatusByType(int fieldType, {int lcid = 0}) {
+  int? getTextFieldStatusByType(int fieldType, {int lcid = 0}) {
     if (this.textResult == null) return 0;
     var field = this.findByTypeAndLcid(fieldType, lcid);
     return field != null ? field.status : 0;
   }
 
-  String getGraphicFieldImageByType(int fieldType, { int source = -1, int pageIndex = -1, int light = -1 }) {
+  String? getGraphicFieldImageByType(int fieldType, { int source = -1, int pageIndex = -1, int light = -1 }) {
     if (this.graphicResult == null) return null;
     List<DocumentReaderGraphicField> foundFields = [];
 
-    for (var field in this.graphicResult.fields)
-      if (field.fieldType == fieldType)
+    for (var field in this.graphicResult!.fields)
+      if (field != null && field.fieldType == fieldType)
         foundFields.add(field);
     if (source != -1)
       for (int i = 0; i < foundFields.length; i++)
@@ -1652,20 +1652,18 @@ class DocumentReaderResults {
     return foundFields.length > 0 ? foundFields[0].value : null;
   }
 
-  int getQualityResult(int imageQualityCheckType, { int securityFeature = -1, int pageIndex = 0 }) {
-    int resultSum = 2;
-    if (this.imageQuality == null) return resultSum;
+  int? getQualityResult(int imageQualityCheckType, { int securityFeature = -1, int pageIndex = 0 }) {
+    int? resultSum = 2;
+    ImageQualityGroup? imageQualityGroup;
 
-    ImageQualityGroup imageQualityGroup;
-
-    for(ImageQualityGroup iq in this.imageQuality)
+    for(ImageQualityGroup? iq in this.imageQuality)
       if (iq != null && iq.pageIndex == pageIndex)
         imageQualityGroup = iq;
     if (imageQualityGroup == null)
       return resultSum;
 
-    for (ImageQuality iq in imageQualityGroup.imageQualityList) {
-      if (iq.type == imageQualityCheckType) {
+    for (ImageQuality? iq in imageQualityGroup.imageQualityList) {
+      if (iq != null && iq.type == imageQualityCheckType) {
         if (securityFeature == -1) {
           if (iq.result == 0) {
             resultSum = 0;
@@ -1682,37 +1680,42 @@ class DocumentReaderResults {
     return resultSum;
   }
 
-  DocumentReaderTextField findByTypeAndLcid(int type, int lcid) {
+  DocumentReaderTextField? findByTypeAndLcid(int type, int lcid) {
     List<DocumentReaderTextField> foundFields = [];
-    for (DocumentReaderTextField field in this.textResult.fields) if (field.fieldType == type) foundFields.add(field);
-    if (foundFields.length <= 0) return null;
-    DocumentReaderTextField foundField;
+    for (DocumentReaderTextField? field in this.textResult!.fields)
+      if (field != null && field.fieldType == type)
+        foundFields.add(field);
+    if (foundFields.length <= 0)
+      return null;
+    DocumentReaderTextField? foundField;
 
     for (DocumentReaderTextField field in foundFields)
       if (lcid == 0) {
         foundField = field;
-        if (field.lcid == lcid) break;
+        if (field.lcid == lcid)
+          break;
       } else if (field.lcid == lcid) return field;
 
     return foundField;
   }
 
-  DocumentReaderValue findBySource(DocumentReaderTextField field, int sourceType) {
-    DocumentReaderValue value;
+  DocumentReaderValue? findBySource(DocumentReaderTextField field, int sourceType) {
+    DocumentReaderValue? value;
     if (sourceType == -1) {
-      DocumentReaderValue mrzVal = this.findBySource(field, 3);
+      DocumentReaderValue? mrzVal = this.findBySource(field, 3);
       if (mrzVal != null) return mrzVal;
       value = findBySource(field, 18);
       if (value != null) return value;
       var visualVal = this.findBySource(field, 17);
       return visualVal != null ? visualVal : null;
     } else
-      for (DocumentReaderValue item in field.values) if (item.sourceType == sourceType) return item;
+      for (DocumentReaderValue? item in field.values)
+        if (item != null && item.sourceType == sourceType) return item;
 
     return null;
   }
 
-  static DocumentReaderResults fromJson(jsonObject) {
+  static DocumentReaderResults? fromJson(jsonObject) {
     if (jsonObject == null) return null;
     var result = new DocumentReaderResults();
 
