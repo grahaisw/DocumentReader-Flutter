@@ -1,4 +1,4 @@
-## 0.1.2\n
+## 0.1.3\n
 # 5.6.0
 **API**:
 * Implemented ability to read multiple pages of a document in manual mode \([`manualMultipageMode`](https://docs.regulaforensics.com/flutter/custom-settings#scanning-modes)\)
