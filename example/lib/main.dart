@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
     EventChannel(
             'flutter_document_reader_api/event/rfid_notification_completion')
         .receiveBroadcastStream()
-        .listen((event) => print("rfid_notification_completion: " + event));
+        .listen((event) => print("rfid_notification_completion: " + event.toString()));
   }
 
   void addCertificates() async {
