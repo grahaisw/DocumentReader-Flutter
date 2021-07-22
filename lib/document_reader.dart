@@ -1446,7 +1446,7 @@ class DocumentReaderAuthenticityElement {
 class DocumentReaderCompletion {
   int? action;
   DocumentReaderResults? results;
-  Throwable? error;
+  DocumentReaderException? error;
 
   static DocumentReaderCompletion? fromJson(jsonObject) {
     if (jsonObject == null) return null;
@@ -1454,7 +1454,7 @@ class DocumentReaderCompletion {
 
     result.action = jsonObject["action"];
     result.results = DocumentReaderResults.fromJson(jsonObject["results"]);
-    result.error = Throwable.fromJson(jsonObject["error"]);
+    result.error = DocumentReaderException.fromJson(jsonObject["error"]);
 
     return result;
   }
@@ -1465,6 +1465,41 @@ class DocumentReaderCompletion {
     if (action != null) result.addAll({"action": action});
     if (results != null) result.addAll({"results": results});
     if (error != null) result.addAll({"error": error});
+
+    return result;
+  }
+}
+
+class DocumentReaderException {
+  int? errorCode;
+  String? localizedMessage;
+  String? message;
+  String? string;
+  List<StackTraceElement?> stackTrace = [];
+
+  static DocumentReaderException? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderException();
+
+    result.errorCode = jsonObject["errorCode"];
+    result.localizedMessage = jsonObject["localizedMessage"];
+    result.message = jsonObject["message"];
+    result.string = jsonObject["string"];
+    if (jsonObject["stackTrace"] != null)
+      for (var item in jsonObject["stackTrace"])
+        result.stackTrace.add(StackTraceElement.fromJson(item));
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (errorCode != null) result.addAll({"errorCode": errorCode});
+    if (localizedMessage != null) result.addAll({"localizedMessage": localizedMessage});
+    if (message != null) result.addAll({"message": message});
+    if (string != null) result.addAll({"string": string});
+    if (stackTrace != null) result.addAll({"stackTrace": stackTrace});
 
     return result;
   }
@@ -1587,6 +1622,92 @@ class ImageInputParam {
     if (width != null) result.addAll({"width": width});
     if (height != null) result.addAll({"height": height});
     if (type != null) result.addAll({"type": type});
+
+    return result;
+  }
+}
+
+class PAResourcesIssuer {
+  List<dynamic>? data;
+  String? friendlyName;
+  List<PAAttribute?> attributes = [];
+
+  static PAResourcesIssuer? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new PAResourcesIssuer();
+
+    result.data = jsonObject["data"];
+    result.friendlyName = jsonObject["friendlyName"];
+    if (jsonObject["attributes"] != null)
+      for (var item in jsonObject["attributes"])
+        result.attributes.add(PAAttribute.fromJson(item));
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (data != null) result.addAll({"data": data});
+    if (friendlyName != null) result.addAll({"friendlyName": friendlyName});
+    if (attributes != null) result.addAll({"attributes": attributes});
+
+    return result;
+  }
+}
+
+class PAAttribute {
+  String? type;
+  String? value;
+
+  static PAAttribute? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new PAAttribute();
+
+    result.type = jsonObject["type"];
+    result.value = jsonObject["value"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (type != null) result.addAll({"type": type});
+    if (value != null) result.addAll({"value": value});
+
+    return result;
+  }
+}
+
+class TAChallenge {
+  List<dynamic>? data;
+  String? auxPCD;
+  String? challengePICC;
+  String? hashPK;
+  String? idPICC;
+
+  static TAChallenge? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new TAChallenge();
+
+    result.data = jsonObject["data"];
+    result.auxPCD = jsonObject["auxPCD"];
+    result.challengePICC = jsonObject["challengePICC"];
+    result.hashPK = jsonObject["hashPK"];
+    result.idPICC = jsonObject["idPICC"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (data != null) result.addAll({"data": data});
+    if (auxPCD != null) result.addAll({"auxPCD": auxPCD});
+    if (challengePICC != null) result.addAll({"challengePICC": challengePICC});
+    if (hashPK != null) result.addAll({"hashPK": hashPK});
+    if (idPICC != null) result.addAll({"idPICC": idPICC});
 
     return result;
   }
@@ -2116,6 +2237,25 @@ class DocReaderOrientation {
   static const int LANDSCAPE = 2;
   static const int LANDSCAPE_LEFT = 3;
   static const int LANDSCAPE_RIGHT = 4;
+}
+
+class DocumentReaderExceptionEnum {
+  static const int NATIVE_JAVA_EXCEPTION = 0;
+  static const int DOCUMENT_READER_STATE_EXCEPTION = 1;
+  static const int DOCUMENT_READER_WRONG_INPUT = 2;
+  static const int INITIALIZATION_FAILED = 3;
+  static const int DOCUMENT_READER_BLE_EXCEPTION = 201;
+  static const int DB_DOWNLOAD_ERROR = 301;
+  static const int LICENSE_ABSENT_OR_CORRUPTED = 101;
+  static const int LICENSE_INVALID_DATE = 102;
+  static const int LICENSE_INVALID_VERSION = 103;
+  static const int LICENSE_INVALID_DEVICE_ID = 104;
+  static const int LICENSE_INVALID_SYSTEM_OR_APP_ID = 105;
+  static const int LICENSE_NO_CAPABILITIES = 106;
+  static const int LICENSE_NO_AUTHENTICITY = 107;
+  static const int LICENSE_NO_DATABASE = 110;
+  static const int LICENSE_DATABASE_INCORRECT = 111;
+  static const int FEATURE_BLUETOOTH_LE_NOT_SUPPORTED = 701;
 }
 
 class eCheckDiagnose {
@@ -4278,6 +4418,7 @@ class eVisualFieldType {
   static const int FT_DLCLASSCODE_D3_FROM = 634;
   static const int FT_DLCLASSCODE_D3_TO = 635;
   static const int FT_DLCLASSCODE_D3_NOTES = 636;
+  static const int FT_ALT_DATE_OF_EXPIRY = 637;
 
   static String getTranslation(int value) {
     switch (value) {
@@ -5453,6 +5594,8 @@ class eVisualFieldType {
         return "DL category D3 valid to";
       case 636:
         return "DL category D3 codes";
+      case 637:
+        return "Alternative date of expiry";
       default:
         return value.toString();
     }
@@ -5469,6 +5612,12 @@ class FontStyle {
 class FrameShapeType {
   static const int LINE = 0;
   static const int CORNER = 1;
+}
+
+class IRfidNotificationCompletion {
+  static const int RFID_EVENT_CHIP_DETECTED = 1;
+  static const int RFID_EVENT_READING_ERROR = 2;
+  static const String RFID_EXTRA_ERROR_CODE = "rfid.error.code";
 }
 
 class LCID {
@@ -6220,8 +6369,24 @@ class DocumentReader {
     return await _channel.invokeMethod("setRfidSessionStatus", [status]);
   }
 
+  static Future<dynamic> providePACertificates(certificates) async {
+    return await _channel.invokeMethod("providePACertificates", [certificates]);
+  }
+
+  static Future<dynamic> provideTACertificates(certificates) async {
+    return await _channel.invokeMethod("provideTACertificates", [certificates]);
+  }
+
+  static Future<dynamic> provideTASignature(certificates) async {
+    return await _channel.invokeMethod("provideTASignature", [certificates]);
+  }
+
   static Future<dynamic> initializeReaderWithDatabasePath(license, path) async {
     return await _channel.invokeMethod("initializeReaderWithDatabasePath", [license, path]);
+  }
+
+  static Future<dynamic> initializeReaderWithDatabase(license, db) async {
+    return await _channel.invokeMethod("initializeReaderWithDatabase", [license, db]);
   }
 
   static Future<dynamic> recognizeImageFrame(image, params) async {
