@@ -97,6 +97,32 @@ RGLRFIDSignatureCallback taSignatureCompletion;
 }
 @end
 
+@implementation RFIDDelegateNoPA
+
+- (void)onRequestTACertificatesWithKey:(NSString *)keyCAR callback:(RGLRFIDCertificatesCallback)callback {
+    taCertificateCompletion = callback;
+    if(taCertificateCompletionEvent != nil)
+        taCertificateCompletionEvent(keyCAR);
+}
+
+- (void)onRequestTASignatureWithChallenge:(RGLTAChallenge *)challenge callback:(void(^)(NSData *signature))callback {
+    taSignatureCompletion = callback;
+    if(taSignatureCompletionEvent != nil)
+        taSignatureCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRGLTAChallenge:challenge]]);
+}
+
+- (void)didChipConnected {
+    if(rfidNotificationCompletionEvent != nil)
+        rfidNotificationCompletionEvent(@1); // int RFID_EVENT_CHIP_DETECTED = 1;
+}
+
+- (void)didReceivedError:(RGLRFIDErrorCodes)errorCode {
+    if(rfidNotificationCompletionEvent != nil)
+        rfidNotificationCompletionEvent(@2); // int RFID_EVENT_READING_ERROR = 2;
+}
+
+@end
+
 @implementation FlutterDocumentReaderApiPlugin
 
 static FlutterMethodChannel * _channel;
@@ -692,32 +718,6 @@ typedef void (^Callback)(NSString* response);
         else
             [self result:[NSString stringWithFormat:@"%@/%@", @"database preparation failed: ", error.description] :errorCallback];
     };
-}
-
-@end
-
-@implementation RFIDDelegateNoPA
-
-- (void)onRequestTACertificatesWithKey:(NSString *)keyCAR callback:(RGLRFIDCertificatesCallback)callback {
-    taCertificateCompletion = callback;
-    if(taCertificateCompletionEvent != nil)
-        taCertificateCompletionEvent(keyCAR);
-}
-
-- (void)onRequestTASignatureWithChallenge:(RGLTAChallenge *)challenge callback:(void(^)(NSData *signature))callback {
-    taSignatureCompletion = callback;
-    if(taSignatureCompletionEvent != nil)
-        taSignatureCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRGLTAChallenge:challenge]]);
-}
-
-- (void)didChipConnected {
-    if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@1); // int RFID_EVENT_CHIP_DETECTED = 1;
-}
-
-- (void)didReceivedError:(RGLRFIDErrorCodes)errorCode {
-    if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@2); // int RFID_EVENT_READING_ERROR = 2;
 }
 
 @end
