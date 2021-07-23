@@ -30,3 +30,6 @@
 
 @interface TASignatureCompletionStreamHandler : NSObject <FlutterStreamHandler>
 @end
+
+@interface RFIDDelegateNoPA : NSObject<RGLDocReaderRFIDDelegate>
+@end

@@ -6093,6 +6093,12 @@ class ProcessingFinishedStatus {
   static const int TIMEOUT = 2;
 }
 
+class RFIDDelegate {
+  static const int NULL = 0;
+  static const int NO_PA = 1;
+  static const int FULL = 2;
+}
+
 class RGLMeasureSystem {
   static const int METRIC = 0;
   static const int IMPERIAL = 1;
@@ -6315,6 +6321,10 @@ class DocumentReader {
 
   static Future<dynamic> getRfidSessionStatus() async {
     return await _channel.invokeMethod("getRfidSessionStatus", []);
+  }
+
+  static Future<dynamic> setRfidDelegate(delegate) async {
+    return await _channel.invokeMethod("setRfidDelegate", [delegate]);
   }
 
   static Future<dynamic> setEnableCoreLogs(logs) async {
