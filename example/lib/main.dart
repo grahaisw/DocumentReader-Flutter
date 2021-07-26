@@ -186,8 +186,7 @@ class _MyAppState extends State<MyApp> {
       },
       "processParams": {"scenario": _selectedScenario}
     });
-    if (Platform.isIOS)
-      DocumentReader.setRfidDelegate(RFIDDelegate.NO_PA);
+    DocumentReader.setRfidDelegate(RFIDDelegate.NO_PA);
     // addCertificates();
   }
 
