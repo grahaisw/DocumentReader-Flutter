@@ -29,6 +29,7 @@ import com.regula.documentreader.api.params.rfid.PKDCertificate;
 import com.regula.documentreader.api.params.rfid.authorization.PAResourcesIssuer;
 import com.regula.documentreader.api.params.rfid.authorization.TAChallenge;
 import com.regula.documentreader.api.results.DocumentReaderResults;
+import com.regula.documentreader.api.parser.DocReaderResultsJsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -442,6 +443,9 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
                 case "provideTASignature":
                     provideTASignature(callback, args(0));
                     break;
+                case "parseCoreResults":
+                    parseCoreResults(callback, args(0));
+                    break;
                 case "initializeReaderWithDatabasePath":
                     initializeReaderWithDatabasePath(callback, args(0), args(1));
                     break;
@@ -494,6 +498,11 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private void getAvailableScenarios(Callback callback) throws JSONException {
         callback.success(JSONConstructor.generateList(Instance().availableScenarios, JSONConstructor::generateDocumentReaderScenario).toString());
+    }
+
+    private void parseCoreResults(Callback callback, String json) {
+        DocumentReaderResults results = (DocumentReaderResults) DocReaderResultsJsonParser.parseCoreResults(json).get("docReaderResults");
+        callback.success(JSONConstructor.generateDocumentReaderResults(results, getContext()).toString());
     }
 
     private void getAPIVersion(Callback callback) {

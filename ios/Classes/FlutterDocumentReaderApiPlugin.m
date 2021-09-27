@@ -338,6 +338,8 @@ typedef void (^Callback)(NSString* response);
         [self provideTACertificates :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"provideTASignature"])
         [self provideTASignature :[args objectAtIndex:0] :successCallback :errorCallback];
+    else if([action isEqualToString:@"parseCoreResults"])
+        [self parseCoreResults :[args objectAtIndex:0] :successCallback :errorCallback];
     else if([action isEqualToString:@"initializeReaderWithDatabasePath"])
         [self initializeReaderWithDatabasePath :[args objectAtIndex:0] :[args objectAtIndex:1] :successCallback :errorCallback];
     else if([action isEqualToString:@"initializeReaderWithDatabase"])
@@ -400,6 +402,10 @@ typedef void (^Callback)(NSString* response);
 
 - (void) initializeReader:(NSString*)licenseString :(Callback)successCallback :(Callback)errorCallback{
     [RGLDocReader.shared initializeReader:[[NSData alloc] initWithBase64EncodedString:licenseString options:0] completion:[self getInitCompletion :successCallback :errorCallback]];
+}
+
+- (void) parseCoreResults:(NSString*)json :(Callback)successCallback :(Callback)errorCallback{
+    [self result:[RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRGLDocumentReaderResults:[RGLDocumentReaderResults initWithRawString: json]]] :successCallback];
 }
 
 - (void) startRFIDReader:(Callback)successCallback :(Callback)errorCallback{

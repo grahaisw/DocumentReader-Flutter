@@ -6391,6 +6391,10 @@ class DocumentReader {
     return await _channel.invokeMethod("provideTASignature", [certificates]);
   }
 
+  static Future<dynamic> parseCoreResults(json) async {
+    return await _channel.invokeMethod("parseCoreResults", [json]);
+  }
+
   static Future<dynamic> initializeReaderWithDatabasePath(license, path) async {
     return await _channel.invokeMethod("initializeReaderWithDatabasePath", [license, path]);
   }
