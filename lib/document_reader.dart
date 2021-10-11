@@ -4419,6 +4419,9 @@ class eVisualFieldType {
   static const int FT_DLCLASSCODE_D3_TO = 635;
   static const int FT_DLCLASSCODE_D3_NOTES = 636;
   static const int FT_ALT_DATE_OF_EXPIRY = 637;
+  static const int FT_DLCLASSCODE_CD_FROM = 638;
+  static const int FT_DLCLASSCODE_CD_TO = 639;
+  static const int FT_DLCLASSCODE_CD_NOTES = 640;
 
   static String getTranslation(int value) {
     switch (value) {
@@ -5596,6 +5599,12 @@ class eVisualFieldType {
         return "DL category D3 codes";
       case 637:
         return "Alternative date of expiry";
+      case 638:
+        return "DL category CD valid from";
+      case 639:
+        return "DL category CD valid to";
+      case 640:
+        return "DL category CD codes";
       default:
         return value.toString();
     }
@@ -6182,6 +6191,10 @@ class UIViewContentMode {
 
 class DocumentReader {
   static const MethodChannel _channel = const MethodChannel('flutter_document_reader_api/method');
+
+  static Future<dynamic> initializeReaderAutomatically() async {
+    return await _channel.invokeMethod("initializeReaderAutomatically", []);
+  }
 
   static Future<dynamic> getAPIVersion() async {
     return await _channel.invokeMethod("getAPIVersion", []);
