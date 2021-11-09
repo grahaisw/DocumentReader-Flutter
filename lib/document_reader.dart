@@ -1470,6 +1470,30 @@ class DocumentReaderCompletion {
   }
 }
 
+class RfidNotificationCompletion {
+  int? notification;
+  int? value;
+
+  static RfidNotificationCompletion? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new RfidNotificationCompletion();
+
+    result.notification = jsonObject["notification"];
+    result.value = jsonObject["value"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (notification != null) result.addAll({"notification": notification});
+    if (value != null) result.addAll({"value": value});
+
+    return result;
+  }
+}
+
 class DocumentReaderException {
   int? errorCode;
   String? localizedMessage;

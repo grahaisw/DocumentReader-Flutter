@@ -113,12 +113,12 @@ RGLRFIDSignatureCallback taSignatureCompletion;
 
 - (void)didChipConnected {
     if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@1); // int RFID_EVENT_CHIP_DETECTED = 1;
+        rfidNotificationCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRfidNotificationCompletion:1]]); // int RFID_EVENT_CHIP_DETECTED = 1;
 }
 
 - (void)didReceivedError:(RGLRFIDErrorCodes)errorCode {
     if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@2); // int RFID_EVENT_READING_ERROR = 2;
+        rfidNotificationCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRfidNotificationCompletionWithError:2:errorCode]]); // int RFID_EVENT_READING_ERROR = 2;
 }
 
 @end
@@ -200,12 +200,12 @@ typedef void (^Callback)(NSString* response);
 
 - (void)didChipConnected {
     if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@1); // int RFID_EVENT_CHIP_DETECTED = 1;
+        rfidNotificationCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRfidNotificationCompletion:1]]); // int RFID_EVENT_CHIP_DETECTED = 1;
 }
 
 - (void)didReceivedError:(RGLRFIDErrorCodes)errorCode {
     if(rfidNotificationCompletionEvent != nil)
-        rfidNotificationCompletionEvent(@2); // int RFID_EVENT_READING_ERROR = 2;
+        rfidNotificationCompletionEvent([RGLWJSONConstructor dictToString:[RGLWJSONConstructor generateRfidNotificationCompletionWithError:2:errorCode]]); // int RFID_EVENT_READING_ERROR = 2;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
