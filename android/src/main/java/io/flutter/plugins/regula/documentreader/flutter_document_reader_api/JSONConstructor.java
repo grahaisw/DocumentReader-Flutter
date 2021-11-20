@@ -1,6 +1,6 @@
 package io.flutter.plugins.regula.documentreader.flutter_document_reader_api;
 
-import static io.flutter.plugins.regula.documentreader.flutter_document_reader_api.api.completions.IRfidNotificationCompletion.RFID_EXTRA_ERROR_CODE;
+import static com.regula.documentreader.api.completions.IRfidNotificationCompletion.RFID_EXTRA_ERROR_CODE;
 
 import android.content.Context;
 import android.graphics.Bitmap;

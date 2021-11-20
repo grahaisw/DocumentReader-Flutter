@@ -23,7 +23,6 @@ import androidx.lifecycle.LifecycleEventObserver;
 import com.regula.documentreader.api.completions.IDocumentReaderCompletion;
 import com.regula.documentreader.api.completions.IDocumentReaderInitCompletion;
 import com.regula.documentreader.api.completions.IDocumentReaderPrepareCompletion;
-import com.regula.documentreader.api.completions.IRfidNotificationCompletion;
 import com.regula.documentreader.api.completions.IRfidPKDCertificateCompletion;
 import com.regula.documentreader.api.completions.IRfidReaderRequest;
 import com.regula.documentreader.api.completions.IRfidTASignatureCompletion;
@@ -256,7 +255,7 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
             new Handler(Looper.getMainLooper()).post(() -> eventVideoEncoderCompletion.success(JSONConstructor.generateVideoEncoderCompletion(sessionId, file).toString()));
     }
 
-    private void sendIRfidNotificationCompletion(int notification) {
+    private void sendIRfidNotificationCompletion(int notification, Bundle value) {
         if (eventIRfidNotificationCompletion != null)
             new Handler(Looper.getMainLooper()).post(() -> eventIRfidNotificationCompletion.success(JSONConstructor.generateRfidNotificationCompletion(notification, value).toString()));
     }
