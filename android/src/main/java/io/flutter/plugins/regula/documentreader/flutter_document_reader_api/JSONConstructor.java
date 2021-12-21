@@ -19,6 +19,7 @@ import com.regula.documentreader.api.params.rfid.authorization.PAAttribute;
 import com.regula.documentreader.api.params.rfid.authorization.PAResourcesIssuer;
 import com.regula.documentreader.api.params.rfid.authorization.TAChallenge;
 import com.regula.documentreader.api.results.Bounds;
+import com.regula.documentreader.api.results.BytesData;
 import com.regula.documentreader.api.results.Coordinate;
 import com.regula.documentreader.api.results.DocReaderFieldRect;
 import com.regula.documentreader.api.results.DocumentReaderBarcodeField;
@@ -28,14 +29,15 @@ import com.regula.documentreader.api.results.DocumentReaderGraphicField;
 import com.regula.documentreader.api.results.DocumentReaderGraphicResult;
 import com.regula.documentreader.api.results.DocumentReaderNotification;
 import com.regula.documentreader.api.results.DocumentReaderResults;
+import com.regula.documentreader.api.results.DocumentReaderResultsStatus;
 import com.regula.documentreader.api.results.DocumentReaderScenario;
-import com.regula.documentreader.api.results.DocumentReaderScenarioFull;
 import com.regula.documentreader.api.results.DocumentReaderTextField;
 import com.regula.documentreader.api.results.DocumentReaderTextResult;
 import com.regula.documentreader.api.results.DocumentReaderValue;
 import com.regula.documentreader.api.results.ElementPosition;
 import com.regula.documentreader.api.results.ImageQuality;
 import com.regula.documentreader.api.results.ImageQualityGroup;
+import com.regula.documentreader.api.results.VDSNCData;
 import com.regula.documentreader.api.results.authenticity.DocumentReaderAuthenticityCheck;
 import com.regula.documentreader.api.results.authenticity.DocumentReaderAuthenticityElement;
 import com.regula.documentreader.api.results.authenticity.DocumentReaderAuthenticityResult;
@@ -350,34 +352,9 @@ class JSONConstructor {
         JSONObject result = new JSONObject();
         if (input == null) return result;
         try {
-            result.put("uvTorch", input.uvTorch);
-            result.put("seriesProcessMode", input.seriesProcessMode);
             result.put("name", input.name);
             result.put("caption", input.caption);
             result.put("description", input.description);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    static JSONObject generateDocumentReaderScenarioFull(DocumentReaderScenarioFull input) {
-        JSONObject result = new JSONObject();
-        if (input == null) return result;
-        try {
-            result.put("uvTorch", input.uvTorch);
-            result.put("frameOrientation", input.frameOrientation);
-            result.put("faceExt", input.faceExt);
-            result.put("multiPageOff", input.multiPageOff);
-            result.put("seriesProcessMode", input.seriesProcessMode);
-            result.put("frameKWHLandscape", input.frameKWHLandscape);
-            result.put("frameKWHPortrait", input.frameKWHPortrait);
-            result.put("frameKWHDoublePageSpreadPortrait", input.frameKWHDoublePageSpreadPortrait);
-            result.put("frameKWHDoublePageSpreadLandscape", input.frameKWHDoublePageSpreadLandscape);
-            result.put("name", input.name);
-            result.put("caption", input.caption);
-            result.put("description", input.description);
-            result.put("manualCrop", input.manualCrop);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1054,6 +1031,92 @@ class JSONConstructor {
         return result;
     }
 
+    static JSONObject generateDocumentReaderResultsStatus(DocumentReaderResultsStatus input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("overallStatus", input.getOverallStatus());
+            result.put("optical", input.getOptical());
+            result.put("detailsOptical", generateDetailsOptical(input.getDetailsOptical()));
+            result.put("rfid", input.getRfid());
+            result.put("detailsRFID", generateDetailsRFID(input.getDetailsRFID()));
+            result.put("portrait", input.getPortrait());
+            result.put("stopList", input.getStopList());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject generateDetailsOptical(DocumentReaderResultsStatus.DetailsOptical input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("overallStatus", input.getOverallStatus());
+            result.put("mrz", input.getMrz());
+            result.put("text", input.getText());
+            result.put("docType", input.getDocType());
+            result.put("security", input.getSecurity());
+            result.put("imageQA", input.getImageQA());
+            result.put("expiry", input.getExpiry());
+            result.put("vds", input.getVds());
+            result.put("pagesCount", input.getPagesCount());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject generateDetailsRFID(DocumentReaderResultsStatus.DetailsRFID input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("pa", input.getPA());
+            result.put("ca", input.getCA());
+            result.put("aa", input.getAA());
+            result.put("ta", input.getTA());
+            result.put("bac", input.getBAC());
+            result.put("pace", input.getPACE());
+            result.put("overallStatus", input.getOverallStatus());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject generateVDSNCData(VDSNCData input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("type", input.getType());
+            result.put("version", input.getVersion());
+            result.put("issuingCountry", input.getIssuingCountry());
+            result.put("message", input.getMessage());
+            result.put("signatureAlgorithm", input.getSignatureAlg());
+            result.put("signature", generateBytesData(input.getSignature()));
+            result.put("certificate", generateBytesData(input.getCertificate()));
+            result.put("certificateChain", generateList(input.getCertificateChain(), JSONConstructor::generateCertificateChain));
+            result.put("notifications", generateLongArray(input.getNotifications()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject generateBytesData(BytesData input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("data", input.getData());
+            result.put("length", input.getLength());
+            result.put("status", input.getStatus());
+            result.put("type", input.getType());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     static JSONObject generateDocumentReaderResults(DocumentReaderResults input, Context context) {
         JSONObject result = new JSONObject();
         if (input == null) return result;
@@ -1078,6 +1141,8 @@ class JSONConstructor {
             result.put("authenticityResult", generateDocumentReaderAuthenticityResult(input.authenticityResult, context));
             result.put("barcodeResult", generateDocumentReaderBarcodeResult(input.barcodeResult));
             result.put("documentType", generateList(input.documentType, JSONConstructor::generateDocumentReaderDocumentType));
+            result.put("status", generateDocumentReaderResultsStatus(input.status));
+            result.put("vdsncData", generateVDSNCData(input.vdsncData));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1089,52 +1154,12 @@ class JSONConstructor {
     static DocumentReaderScenario DocumentReaderScenarioFromJSON(JSONObject input) {
         try {
             DocumentReaderScenario result = new DocumentReaderScenario();
-            if (input.has("uvTorch"))
-                result.uvTorch = input.getBoolean("uvTorch");
-            if (input.has("seriesProcessMode"))
-                result.seriesProcessMode = input.getBoolean("seriesProcessMode");
             if (input.has("name"))
                 result.name = input.getString("name");
             if (input.has("caption"))
                 result.caption = input.getString("caption");
             if (input.has("description"))
                 result.description = input.getString("description");
-            return result;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    static DocumentReaderScenarioFull DocumentReaderScenarioFullFromJSON(JSONObject input) {
-        try {
-            DocumentReaderScenarioFull result = new DocumentReaderScenarioFull();
-            if (input.has("uvTorch"))
-                result.uvTorch = input.getBoolean("uvTorch");
-            if (input.has("frameOrientation"))
-                result.frameOrientation = input.getInt("frameOrientation");
-            if (input.has("faceExt"))
-                result.faceExt = input.getBoolean("faceExt");
-            if (input.has("multiPageOff"))
-                result.multiPageOff = input.getInt("multiPageOff");
-            if (input.has("seriesProcessMode"))
-                result.seriesProcessMode = input.getBoolean("seriesProcessMode");
-            if (input.has("frameKWHLandscape"))
-                result.frameKWHLandscape = input.getDouble("frameKWHLandscape");
-            if (input.has("frameKWHPortrait"))
-                result.frameKWHPortrait = input.getDouble("frameKWHPortrait");
-            if (input.has("frameKWHDoublePageSpreadPortrait"))
-                result.frameKWHDoublePageSpreadPortrait = input.getDouble("frameKWHDoublePageSpreadPortrait");
-            if (input.has("frameKWHDoublePageSpreadLandscape"))
-                result.frameKWHDoublePageSpreadLandscape = input.getDouble("frameKWHDoublePageSpreadLandscape");
-            if (input.has("name"))
-                result.name = input.getString("name");
-            if (input.has("caption"))
-                result.caption = input.getString("caption");
-            if (input.has("description"))
-                result.description = input.getString("description");
-            if (input.has("manualCrop"))
-                result.manualCrop = input.getBoolean("manualCrop");
             return result;
         } catch (JSONException e) {
             e.printStackTrace();

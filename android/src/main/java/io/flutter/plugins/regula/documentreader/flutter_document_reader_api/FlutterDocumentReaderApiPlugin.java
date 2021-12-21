@@ -35,6 +35,7 @@ import com.regula.documentreader.api.params.rfid.authorization.PAResourcesIssuer
 import com.regula.documentreader.api.params.rfid.authorization.TAChallenge;
 import com.regula.documentreader.api.parser.DocReaderResultsJsonParser;
 import com.regula.documentreader.api.results.DocumentReaderResults;
+import com.regula.documentreader.api.results.DocumentReaderScenario;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -585,11 +586,11 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void selectedScenario(Callback callback) {
-        callback.success(JSONConstructor.generateDocumentReaderScenarioFull(Instance().getScenario(Instance().processParams().getScenario())).toString());
+        callback.success(JSONConstructor.generateDocumentReaderScenario(getScenario(Instance().processParams().getScenario())).toString());
     }
 
     private void getScenario(Callback callback, String scenario) {
-        callback.success(JSONConstructor.generateDocumentReaderScenarioFull(Instance().getScenario(scenario)).toString());
+        callback.success(JSONConstructor.generateDocumentReaderScenario(getScenario(scenario)).toString());
     }
 
     private void getLicenseExpiryDate(Callback callback) {
@@ -840,6 +841,13 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private void getRfidSessionStatus(Callback callback) {
         callback.error("getRfidSessionStatus() is an ios-only method");
+    }
+
+    private DocumentReaderScenario getScenario(String input) {
+        for (DocumentReaderScenario scenario: Instance().availableScenarios)
+            if(scenario.name.equals(input))
+                return scenario;
+        return null;
     }
 
     private IDocumentReaderCompletion getCompletion() {

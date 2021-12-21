@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 // Classes
 
 class DocumentReaderScenario {
-  bool? uvTorch;
-  bool? seriesProcessMode;
   String? name;
   String? caption;
   String? description;
@@ -14,8 +12,6 @@ class DocumentReaderScenario {
     if (jsonObject == null) return null;
     var result = new DocumentReaderScenario();
 
-    result.uvTorch = jsonObject["uvTorch"];
-    result.seriesProcessMode = jsonObject["seriesProcessMode"];
     result.name = jsonObject["name"];
     result.caption = jsonObject["caption"];
     result.description = jsonObject["description"];
@@ -26,68 +22,9 @@ class DocumentReaderScenario {
   Map toJson(){
     Map result = {};
 
-    if (uvTorch != null) result.addAll({"uvTorch": uvTorch});
-    if (seriesProcessMode != null) result.addAll({"seriesProcessMode": seriesProcessMode});
     if (name != null) result.addAll({"name": name});
     if (caption != null) result.addAll({"caption": caption});
     if (description != null) result.addAll({"description": description});
-
-    return result;
-  }
-}
-
-class DocumentReaderScenarioFull {
-  bool? uvTorch;
-  int? frameOrientation;
-  bool? faceExt;
-  int? multiPageOff;
-  bool? seriesProcessMode;
-  double? frameKWHLandscape;
-  double? frameKWHPortrait;
-  double? frameKWHDoublePageSpreadPortrait;
-  double? frameKWHDoublePageSpreadLandscape;
-  String? name;
-  String? caption;
-  String? description;
-  bool? manualCrop;
-
-  static DocumentReaderScenarioFull? fromJson(jsonObject) {
-    if (jsonObject == null) return null;
-    var result = new DocumentReaderScenarioFull();
-
-    result.uvTorch = jsonObject["uvTorch"];
-    result.frameOrientation = jsonObject["frameOrientation"];
-    result.faceExt = jsonObject["faceExt"];
-    result.multiPageOff = jsonObject["multiPageOff"];
-    result.seriesProcessMode = jsonObject["seriesProcessMode"];
-    result.frameKWHLandscape = jsonObject["frameKWHLandscape"] == null ? null : jsonObject["frameKWHLandscape"].toDouble();
-    result.frameKWHPortrait = jsonObject["frameKWHPortrait"] == null ? null : jsonObject["frameKWHPortrait"].toDouble();
-    result.frameKWHDoublePageSpreadPortrait = jsonObject["frameKWHDoublePageSpreadPortrait"] == null ? null : jsonObject["frameKWHDoublePageSpreadPortrait"].toDouble();
-    result.frameKWHDoublePageSpreadLandscape = jsonObject["frameKWHDoublePageSpreadLandscape"] == null ? null : jsonObject["frameKWHDoublePageSpreadLandscape"].toDouble();
-    result.name = jsonObject["name"];
-    result.caption = jsonObject["caption"];
-    result.description = jsonObject["description"];
-    result.manualCrop = jsonObject["manualCrop"];
-
-    return result;
-  }
-
-  Map toJson(){
-    Map result = {};
-
-    if (uvTorch != null) result.addAll({"uvTorch": uvTorch});
-    if (frameOrientation != null) result.addAll({"frameOrientation": frameOrientation});
-    if (faceExt != null) result.addAll({"faceExt": faceExt});
-    if (multiPageOff != null) result.addAll({"multiPageOff": multiPageOff});
-    if (seriesProcessMode != null) result.addAll({"seriesProcessMode": seriesProcessMode});
-    if (frameKWHLandscape != null) result.addAll({"frameKWHLandscape": frameKWHLandscape});
-    if (frameKWHPortrait != null) result.addAll({"frameKWHPortrait": frameKWHPortrait});
-    if (frameKWHDoublePageSpreadPortrait != null) result.addAll({"frameKWHDoublePageSpreadPortrait": frameKWHDoublePageSpreadPortrait});
-    if (frameKWHDoublePageSpreadLandscape != null) result.addAll({"frameKWHDoublePageSpreadLandscape": frameKWHDoublePageSpreadLandscape});
-    if (name != null) result.addAll({"name": name});
-    if (caption != null) result.addAll({"caption": caption});
-    if (description != null) result.addAll({"description": description});
-    if (manualCrop != null) result.addAll({"manualCrop": manualCrop});
 
     return result;
   }
@@ -1737,6 +1674,208 @@ class TAChallenge {
   }
 }
 
+class DocumentReaderResultsStatus {
+  int? overallStatus;
+  int? optical;
+  DetailsOptical? detailsOptical;
+  int? rfid;
+  DetailsRFID? detailsRFID;
+  int? portrait;
+  int? stopList;
+
+  static DocumentReaderResultsStatus? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderResultsStatus();
+
+    result.overallStatus = jsonObject["overallStatus"];
+    result.optical = jsonObject["optical"];
+    result.detailsOptical = DetailsOptical.fromJson(jsonObject["detailsOptical"]);
+    result.rfid = jsonObject["rfid"];
+    result.detailsRFID = DetailsRFID.fromJson(jsonObject["detailsRFID"]);
+    result.portrait = jsonObject["portrait"];
+    result.stopList = jsonObject["stopList"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (overallStatus != null) result.addAll({"overallStatus": overallStatus});
+    if (optical != null) result.addAll({"optical": optical});
+    if (detailsOptical != null) result.addAll({"detailsOptical": detailsOptical});
+    if (rfid != null) result.addAll({"rfid": rfid});
+    if (detailsRFID != null) result.addAll({"detailsRFID": detailsRFID});
+    if (portrait != null) result.addAll({"portrait": portrait});
+    if (stopList != null) result.addAll({"stopList": stopList});
+
+    return result;
+  }
+}
+
+class DocumentReaderResultsStatus.DetailsOptical {
+  int? overallStatus;
+  int? mrz;
+  int? text;
+  int? docType;
+  int? security;
+  int? imageQA;
+  int? expiry;
+  int? vds;
+  int? pagesCount;
+
+  static DocumentReaderResultsStatus.DetailsOptical? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderResultsStatus.DetailsOptical();
+
+    result.overallStatus = jsonObject["overallStatus"];
+    result.mrz = jsonObject["mrz"];
+    result.text = jsonObject["text"];
+    result.docType = jsonObject["docType"];
+    result.security = jsonObject["security"];
+    result.imageQA = jsonObject["imageQA"];
+    result.expiry = jsonObject["expiry"];
+    result.vds = jsonObject["vds"];
+    result.pagesCount = jsonObject["pagesCount"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (overallStatus != null) result.addAll({"overallStatus": overallStatus});
+    if (mrz != null) result.addAll({"mrz": mrz});
+    if (text != null) result.addAll({"text": text});
+    if (docType != null) result.addAll({"docType": docType});
+    if (security != null) result.addAll({"security": security});
+    if (imageQA != null) result.addAll({"imageQA": imageQA});
+    if (expiry != null) result.addAll({"expiry": expiry});
+    if (vds != null) result.addAll({"vds": vds});
+    if (pagesCount != null) result.addAll({"pagesCount": pagesCount});
+
+    return result;
+  }
+}
+
+class DocumentReaderResultsStatus.DetailsRFID {
+  int? pa;
+  int? ca;
+  int? aa;
+  int? ta;
+  int? bac;
+  int? pace;
+  int? overallStatus;
+
+  static DocumentReaderResultsStatus.DetailsRFID? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new DocumentReaderResultsStatus.DetailsRFID();
+
+    result.pa = jsonObject["pa"];
+    result.ca = jsonObject["ca"];
+    result.aa = jsonObject["aa"];
+    result.ta = jsonObject["ta"];
+    result.bac = jsonObject["bac"];
+    result.pace = jsonObject["pace"];
+    result.overallStatus = jsonObject["overallStatus"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (pa != null) result.addAll({"pa": pa});
+    if (ca != null) result.addAll({"ca": ca});
+    if (aa != null) result.addAll({"aa": aa});
+    if (ta != null) result.addAll({"ta": ta});
+    if (bac != null) result.addAll({"bac": bac});
+    if (pace != null) result.addAll({"pace": pace});
+    if (overallStatus != null) result.addAll({"overallStatus": overallStatus});
+
+    return result;
+  }
+}
+
+class VDSNCData {
+  String? type;
+  int? version;
+  String? issuingCountry;
+  dynamic? message;
+  String? signatureAlgorithm;
+  BytesData? signature;
+  BytesData? certificate;
+  List<CertificateChain?> certificateChain = [];
+  List<int?> notifications = [];
+
+  static VDSNCData? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new VDSNCData();
+
+    result.type = jsonObject["type"];
+    result.version = jsonObject["version"];
+    result.issuingCountry = jsonObject["issuingCountry"];
+    result.message = jsonObject["message"];
+    result.signatureAlgorithm = jsonObject["signatureAlgorithm"];
+    result.signature = BytesData.fromJson(jsonObject["signature"]);
+    result.certificate = BytesData.fromJson(jsonObject["certificate"]);
+    if (jsonObject["certificateChain"] != null)
+      for (var item in jsonObject["certificateChain"])
+        result.certificateChain.add(CertificateChain.fromJson(item));
+    if (jsonObject["notifications"] != null)
+      for (var item in jsonObject["notifications"])
+        result.notifications.add(item);
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (type != null) result.addAll({"type": type});
+    if (version != null) result.addAll({"version": version});
+    if (issuingCountry != null) result.addAll({"issuingCountry": issuingCountry});
+    if (message != null) result.addAll({"message": message});
+    if (signatureAlgorithm != null) result.addAll({"signatureAlgorithm": signatureAlgorithm});
+    if (signature != null) result.addAll({"signature": signature});
+    if (certificate != null) result.addAll({"certificate": certificate});
+    if (certificateChain != null) result.addAll({"certificateChain": certificateChain});
+    if (notifications != null) result.addAll({"notifications": notifications});
+
+    return result;
+  }
+}
+
+class BytesData {
+  String? data;
+  int? length;
+  int? status;
+  int? type;
+
+  static BytesData? fromJson(jsonObject) {
+    if (jsonObject == null) return null;
+    var result = new BytesData();
+
+    result.data = jsonObject["data"];
+    result.length = jsonObject["length"];
+    result.status = jsonObject["status"];
+    result.type = jsonObject["type"];
+
+    return result;
+  }
+
+  Map toJson(){
+    Map result = {};
+
+    if (data != null) result.addAll({"data": data});
+    if (length != null) result.addAll({"length": length});
+    if (status != null) result.addAll({"status": status});
+    if (type != null) result.addAll({"type": type});
+
+    return result;
+  }
+}
+
 class DocumentReaderResults {
   int? chipPage;
   int? overallResult;
@@ -1758,6 +1897,8 @@ class DocumentReaderResults {
   DocumentReaderAuthenticityResult? authenticityResult;
   DocumentReaderBarcodeResult? barcodeResult;
   List<DocumentReaderDocumentType?> documentType = [];
+  DocumentReaderResultsStatus? status;
+  VDSNCData? vdsncData;
 
   String? getTextFieldValueByType(int fieldType, { int lcid = 0, int source = -1, bool original = false }) {
     if (this.textResult == null) return null;
@@ -1894,6 +2035,8 @@ class DocumentReaderResults {
     if (jsonObject["documentType"] != null)
       for (var item in jsonObject["documentType"])
         result.documentType.add(DocumentReaderDocumentType.fromJson(item));
+    result.status = DocumentReaderResultsStatus.fromJson(jsonObject["status"]);
+    result.vdsncData = VDSNCData.fromJson(jsonObject["vdsncData"]);
 
     return result;
   }
@@ -1921,6 +2064,8 @@ class DocumentReaderResults {
     if (authenticityResult != null) result.addAll({"authenticityResult": authenticityResult});
     if (barcodeResult != null) result.addAll({"barcodeResult": barcodeResult});
     if (documentType != null) result.addAll({"documentType": documentType});
+    if (status != null) result.addAll({"status": status});
+    if (vdsncData != null) result.addAll({"vdsncData": vdsncData});
 
     return result;
   }
