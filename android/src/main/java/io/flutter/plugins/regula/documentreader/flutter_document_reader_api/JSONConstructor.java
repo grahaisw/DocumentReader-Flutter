@@ -14,6 +14,7 @@ import com.regula.documentreader.api.enums.PDF417Info;
 import com.regula.documentreader.api.enums.eGraphicFieldType;
 import com.regula.documentreader.api.enums.eRPRM_Lights;
 import com.regula.documentreader.api.errors.DocumentReaderException;
+import com.regula.documentreader.api.internal.core.CoreDetailedScenario;
 import com.regula.documentreader.api.params.FaceMetaData;
 import com.regula.documentreader.api.params.rfid.authorization.PAAttribute;
 import com.regula.documentreader.api.params.rfid.authorization.PAResourcesIssuer;
@@ -355,6 +356,29 @@ class JSONConstructor {
             result.put("name", input.name);
             result.put("caption", input.caption);
             result.put("description", input.description);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject generateCoreDetailedScenario(CoreDetailedScenario input) {
+        JSONObject result = new JSONObject();
+        if (input == null) return result;
+        try {
+            result.put("uvTorch", input.uvTorch);
+            result.put("frameOrientation", input.frameOrientation);
+            result.put("faceExt", input.faceExt);
+            result.put("multiPageOff", input.multiPageOff);
+            result.put("seriesProcessMode", input.seriesProcessMode);
+            result.put("frameKWHLandscape", input.frameKWHLandscape);
+            result.put("frameKWHPortrait", input.frameKWHPortrait);
+            result.put("frameKWHDoublePageSpreadPortrait", input.frameKWHDoublePageSpreadPortrait);
+            result.put("frameKWHDoublePageSpreadLandscape", input.frameKWHDoublePageSpreadLandscape);
+            result.put("name", input.name);
+            result.put("caption", input.caption);
+            result.put("description", input.description);
+            result.put("manualCrop", input.manualCrop);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1160,6 +1184,42 @@ class JSONConstructor {
                 result.caption = input.getString("caption");
             if (input.has("description"))
                 result.description = input.getString("description");
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static CoreDetailedScenario CoreDetailedScenarioFromJSON(JSONObject input) {
+        try {
+            CoreDetailedScenario result = new CoreDetailedScenario();
+            if (input.has("uvTorch"))
+                result.uvTorch = input.getBoolean("uvTorch");
+            if (input.has("frameOrientation"))
+                result.frameOrientation = input.getInt("frameOrientation");
+            if (input.has("faceExt"))
+                result.faceExt = input.getBoolean("faceExt");
+            if (input.has("multiPageOff"))
+                result.multiPageOff = input.getInt("multiPageOff");
+            if (input.has("seriesProcessMode"))
+                result.seriesProcessMode = input.getBoolean("seriesProcessMode");
+            if (input.has("frameKWHLandscape"))
+                result.frameKWHLandscape = input.getDouble("frameKWHLandscape");
+            if (input.has("frameKWHPortrait"))
+                result.frameKWHPortrait = input.getDouble("frameKWHPortrait");
+            if (input.has("frameKWHDoublePageSpreadPortrait"))
+                result.frameKWHDoublePageSpreadPortrait = input.getDouble("frameKWHDoublePageSpreadPortrait");
+            if (input.has("frameKWHDoublePageSpreadLandscape"))
+                result.frameKWHDoublePageSpreadLandscape = input.getDouble("frameKWHDoublePageSpreadLandscape");
+            if (input.has("name"))
+                result.name = input.getString("name");
+            if (input.has("caption"))
+                result.caption = input.getString("caption");
+            if (input.has("description"))
+                result.description = input.getString("description");
+            if (input.has("manualCrop"))
+                result.manualCrop = input.getBoolean("manualCrop");
             return result;
         } catch (JSONException e) {
             e.printStackTrace();

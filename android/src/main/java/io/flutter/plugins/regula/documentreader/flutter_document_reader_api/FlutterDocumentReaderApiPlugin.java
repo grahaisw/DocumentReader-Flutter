@@ -28,6 +28,7 @@ import com.regula.documentreader.api.completions.IRfidReaderRequest;
 import com.regula.documentreader.api.completions.IRfidTASignatureCompletion;
 import com.regula.documentreader.api.enums.DocReaderAction;
 import com.regula.documentreader.api.errors.DocumentReaderException;
+import com.regula.documentreader.api.internal.core.CoreScenarioUtil;
 import com.regula.documentreader.api.params.DocReaderConfig;
 import com.regula.documentreader.api.params.ImageInputParam;
 import com.regula.documentreader.api.params.rfid.PKDCertificate;
@@ -586,11 +587,11 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
     }
 
     private void selectedScenario(Callback callback) {
-        callback.success(JSONConstructor.generateDocumentReaderScenario(getScenario(Instance().processParams().getScenario())).toString());
+        callback.success(JSONConstructor.generateCoreDetailedScenario(CoreScenarioUtil.getScenario(Instance().processParams().getScenario())).toString());
     }
 
     private void getScenario(Callback callback, String scenario) {
-        callback.success(JSONConstructor.generateDocumentReaderScenario(getScenario(scenario)).toString());
+        callback.success(JSONConstructor.generateCoreDetailedScenario(CoreScenarioUtil.getScenario(scenario)).toString());
     }
 
     private void getLicenseExpiryDate(Callback callback) {
@@ -841,13 +842,6 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
 
     private void getRfidSessionStatus(Callback callback) {
         callback.error("getRfidSessionStatus() is an ios-only method");
-    }
-
-    private DocumentReaderScenario getScenario(String input) {
-        for (DocumentReaderScenario scenario: Instance().availableScenarios)
-            if(scenario.name.equals(input))
-                return scenario;
-        return null;
     }
 
     private IDocumentReaderCompletion getCompletion() {
