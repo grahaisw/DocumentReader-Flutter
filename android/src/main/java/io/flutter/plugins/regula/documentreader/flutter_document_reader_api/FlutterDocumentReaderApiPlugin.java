@@ -36,7 +36,6 @@ import com.regula.documentreader.api.params.rfid.authorization.PAResourcesIssuer
 import com.regula.documentreader.api.params.rfid.authorization.TAChallenge;
 import com.regula.documentreader.api.parser.DocReaderResultsJsonParser;
 import com.regula.documentreader.api.results.DocumentReaderResults;
-import com.regula.documentreader.api.results.DocumentReaderScenario;
 
 import org.json.JSONArray;
 import org.json.JSONException;
