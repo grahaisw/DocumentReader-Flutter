@@ -31,7 +31,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation('com.regula.documentreader:api:6.1.6452') {
+    implementation('com.regula.documentreader:api:6.1.6471') {
         transitive = true
     }
 }
