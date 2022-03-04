@@ -61,6 +61,7 @@
 +(NSMutableDictionary* _Nonnull)generateRGLVDSNCData:(RGLVDSNCData* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRGLBytesData:(RGLBytesData* _Nullable)input;
 +(NSMutableDictionary* _Nonnull)generateRGLRFIDNotify:(RGLRFIDNotify* _Nullable)input;
++(NSMutableDictionary* _Nonnull)generateRGLUVFiberElement:(RGLUVFiberElement* _Nullable)input;
 
 @end
 #endif
