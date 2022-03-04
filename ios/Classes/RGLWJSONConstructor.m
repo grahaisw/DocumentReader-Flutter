@@ -1057,4 +1057,16 @@
     return result;
 }
 
++(NSMutableDictionary* _Nonnull)generateRGLElementRect:(RGLElementRect* _Nullable)input {
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    if(input == nil) return result;
+
+    result[@"bottom"] = @(input.bottom);
+    result[@"left"] = @(input.left);
+    result[@"right"] = @(input.right);
+    result[@"top"] = @(input.top);
+
+    return result;
+}
+
 @end
