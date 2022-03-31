@@ -610,6 +610,10 @@ typedef void (^Callback)(NSString* response);
     [self result:RGLDocReader.shared.documentReaderStatus :successCallback];
 }
 
+- (void) setTCCParams:(NSDictionary*)params :(Callback)successCallback :(Callback)errorCallback{
+    [RGLDocReader.shared setTCCParams:[RGLWJSONConstructor RGLTCCParamsFromJson:params] completion:[self getTCCParamsCompletion:successCallback :errorCallback]];
+}
+
 - (void) getRfidSessionStatus:(Callback)successCallback :(Callback)errorCallback{
     [self result:RGLDocReader.shared.rfidSessionStatus :successCallback];
 }
