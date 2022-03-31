@@ -455,6 +455,9 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
                 case "parseCoreResults":
                     parseCoreResults(callback, args(0));
                     break;
+                case "setTCCParams":
+                    setTCCParams(callback, args(0));
+                    break;
                 case "initializeReaderWithDatabasePath":
                     initializeReaderWithDatabasePath(callback, args(0), args(1));
                     break;

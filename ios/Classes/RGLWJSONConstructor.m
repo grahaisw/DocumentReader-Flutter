@@ -25,6 +25,15 @@
     return [[RGLPKDCertificate alloc] initWithBinaryData:binaryData resourceType:type privateKey:privateKey];
 }
 
++(RGLTCCParams*)RGLTCCParamsFromJson:(NSDictionary*)input {
+    NSString* serviceTAURLString = [input valueForKey:@"serviceTAURLString"];
+    NSString* servicePAURLString = [input valueForKey:@"servicePAURLString"];
+    NSString* pfxCertURLString = [input valueForKey:@"pfxCertURLString"];
+    NSString* pfxPassPhrase = [input valueForKey:@"pfxPassPhrase"];
+
+    return [[RGLTCCParams alloc] initWithServiceTAURLString:serviceTAURLString servicePAURLString:servicePAURLString pfxCertURLString:pfxCertURLString pfxPassPhrase:pfxPassPhrase];
+}
+
 +(NSMutableDictionary*)generateCGPoint:(CGPoint)input {
     NSMutableDictionary *result = [NSMutableDictionary new];
 
