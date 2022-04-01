@@ -572,6 +572,10 @@ public class FlutterDocumentReaderApiPlugin implements FlutterPlugin, MethodCall
         callback.success(Instance().version.database.documentsNumber);
     }
 
+    private void setTCCParams(Callback callback, final JSONObject params) {
+        Instance().setTccParams(JSONConstructor.TCCParamsFromJSON(params), getTCCParamsCompletion(callback));
+    }
+
     private void deinitializeReader(Callback callback) {
         Instance().deinitializeReader();
         callback.success();
