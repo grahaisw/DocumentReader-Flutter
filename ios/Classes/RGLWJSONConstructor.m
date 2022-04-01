@@ -26,9 +26,9 @@
 }
 
 +(RGLTCCParams*)RGLTCCParamsFromJson:(NSDictionary*)input {
-    NSString* serviceTAURLString = [input valueForKey:@"serviceTAURLString"];
-    NSString* servicePAURLString = [input valueForKey:@"servicePAURLString"];
-    NSString* pfxCertURLString = [input valueForKey:@"pfxCertURLString"];
+    NSString* serviceTAURLString = [input valueForKey:@"serviceUrlTA"];
+    NSString* servicePAURLString = [input valueForKey:@"serviceUrlPA"];
+    NSString* pfxCertURLString = [input valueForKey:@"pfxCertUrl"];
     NSString* pfxPassPhrase = [input valueForKey:@"pfxPassPhrase"];
 
     return [[RGLTCCParams alloc] initWithServiceTAURLString:serviceTAURLString servicePAURLString:servicePAURLString pfxCertURLString:pfxCertURLString pfxPassPhrase:pfxPassPhrase];

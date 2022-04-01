@@ -2735,6 +2735,7 @@ class eImageQualityCheckType {
   static const int IQC_BOUNDS = 5;
   static const int IQC_SCREEN_CAPTURE = 6;
   static const int IQC_PORTRAIT = 7;
+  static const int IQC_HANDWRITTEN = 8;
 }
 
 class eLDS_ParsingErrorCodes {
