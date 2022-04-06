@@ -7249,10 +7249,6 @@ class DocumentReader {
     return await _channel.invokeMethod("setTCCParams", [params]);
   }
 
-  static Future<dynamic> initializeReaderWithDatabasePath(license, path) async {
-    return await _channel.invokeMethod("initializeReaderWithDatabasePath", [license, path]);
-  }
-
   static Future<dynamic> initializeReaderWithDatabase(license, db) async {
     return await _channel.invokeMethod("initializeReaderWithDatabase", [license, db]);
   }
