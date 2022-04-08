@@ -136,6 +136,29 @@
     return result;
 }
 
++(NSNumber*)generateRGLImageQualityCheckType:(RGLImageQualityCheckType)value {
+    if(value == RGLImageQualityCheckTypeImageGlares)
+        return @0;
+    else if(value == RGLImageQualityCheckTypeImageFocus)
+        return @1;
+    else if(value == RGLImageQualityCheckTypeImageResolution)
+        return @2;
+    else if(value == RGLImageQualityCheckTypeImageColorness)
+        return @3;
+    else if(value == RGLImageQualityCheckTypeImagePerspective)
+        return @4;
+    else if(value == RGLImageQualityCheckTypeImageBounds)
+        return @5;
+    else if(value == RGLImageQualityCheckTypeScreenCapture)
+        return @6;
+    else if(value == RGLImageQualityCheckTypePortrait)
+        return @7;
+    else if(value == RGLImageQualityCheckTypeHandwritten)
+        return @8;
+    else
+        return @0;
+}
+
 +(NSInteger)generateRFIDNotificationAction:(RGLRFIDNotificationAction)input {
     return 5;
 }
@@ -400,7 +423,7 @@
     NSMutableDictionary *result = [NSMutableDictionary new];
     if(input == nil) return result;
 
-    result[@"type"] = input.type;
+    result[@"type"] = [self generateRGLImageQualityCheckType:input.type];
     result[@"result"] = @(input.result);
     result[@"featureType"] = @(input.featureType);
     result[@"boundRects"] = [self generateNSArrayCGRect:input.boundRects];
